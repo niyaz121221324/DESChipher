@@ -54,17 +54,17 @@ namespace DESChipherConsoleTool
                 BitArray previousRightBlock = rightBlock;
                 BitArray previousLeftBlock = leftBlock;
 
-                for (int j = 0; j < MAX_ROUND - 1; j++)
+                leftBlock = previousRightBlock;
+                rightBlock = previousLeftBlock;
+
+                for (int j = MAX_ROUND - 1; j >= 1; j--)
                 {
                     leftBlock = previousRightBlock;
-                    rightBlock = previousLeftBlock.Xor(Function(previousRightBlock, keyBlocks[j]));
+                    rightBlock = previousLeftBlock.Xor(Function(previousRightBlock, keyBlocks[j - 1]));
 
                     previousLeftBlock = leftBlock;
                     previousRightBlock = rightBlock;
                 }
-
-                leftBlock = previousLeftBlock.Xor(Function(previousRightBlock, keyBlocks.Last()));
-                rightBlock = previousRightBlock;
 
                 blocks[i] = BitArrayHelper.MergeArrays(rightBlock, leftBlock);
                 blocks[i] = _finalPermutator.Permutate(blocks[i]);
@@ -97,7 +97,7 @@ namespace DESChipherConsoleTool
                 BitArray previousRightBlock = rightBlock;
                 BitArray previousLeftBlock = leftBlock;
 
-                for (int j = 0; j < MAX_ROUND - 1; j++)
+                for (int j = MAX_ROUND - 1; j >= 1; j--)
                 {
                     leftBlock = previousRightBlock;
                     rightBlock = previousLeftBlock.Xor(Function(previousRightBlock, keyBlocks[MAX_ROUND - j - 1]));

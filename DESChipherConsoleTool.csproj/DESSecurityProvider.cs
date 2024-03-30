@@ -13,7 +13,7 @@ namespace DESChipherConsoleTool
         private readonly IPFinalPermutator _landscapePermutator;
         private readonly IFinalPermutator _finalPermutator;
 
-        public DESSecurityProvider(BitArray key,IInitialPermutator ipTablePermutator = null,
+        public DESSecurityProvider(BitArray key, IInitialPermutator ipTablePermutator = null,
             IFinalKeyCompressionPermutator finalKeyCompressionPermutator = null,
             IKeyComperssionPermutator keyComperssionPermutator = null, 
             IExpansionFunction expansionFunction = null,
@@ -72,10 +72,6 @@ namespace DESChipherConsoleTool
                 previousRighBlock = rightBlock;
             }
 
-            var temp = leftBlock;
-            leftBlock = leftBlock.Xor(Function(rightBlock, keyBlocks[keyBlocks.Length - 1]));
-            rightBlock = temp;
-
             block = BitArrayHelper.MergeArrays(rightBlock, leftBlock);
             block = _finalPermutator.Permutate(block);
         }
@@ -121,14 +117,19 @@ namespace DESChipherConsoleTool
 
             BitArray[] keyBlocks = GenerateKey(key);
 
-            for (int round = MAX_ROUND; round >= 0; round--)
+            BitArray previousRighBlock = rightBlock;
+            BitArray previousLeftBlock = leftBlock;
+
+            for (int i = 1; i <= MAX_ROUND - 1; i++)
             {
-                BitArray previousLeftBlock = leftBlock.Clone() as BitArray;
-                leftBlock = rightBlock.Clone() as BitArray;
-                rightBlock = previousLeftBlock.Xor(Function(rightBlock, keyBlocks[round - 1]));
+                leftBlock = previousRighBlock;
+                rightBlock = previousLeftBlock.Xor(Function(previousLeftBlock, keyBlocks[i - 1]));
+
+                previousLeftBlock = leftBlock;
+                previousRighBlock = rightBlock;
             }
 
-            block = BitArrayHelper.MergeArrays(leftBlock, rightBlock); 
+            block = BitArrayHelper.MergeArrays(rightBlock, leftBlock);
             block = _ipTablePermutator.InitialPermutate(block);
         }
 

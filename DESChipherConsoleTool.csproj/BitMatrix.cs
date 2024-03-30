@@ -24,6 +24,26 @@ namespace DESChipherConsoleTool
         }
 
         /// <summary>
+        /// Возвращает массив матриц из строки для алгоритма DES
+        /// </summary>
+        /// <param name="input">Входная строка</param>
+        /// <returns>Массив битовых матриц</returns>
+        public static BitMatrix[] GetBlocksFromString(string input)
+        {
+            BitArray inputBitArray = BitArrayHelper.FromString(input);
+            BitArray[] blocks = inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
+
+            BitMatrix[] bitMatrices = new BitMatrix[blocks.Length];
+
+            for (int i = 0; i < bitMatrices.Length; i++)
+            {
+                bitMatrices[i] = FromBitArray(blocks[i], 8, 8);
+            }
+
+            return bitMatrices;
+        }
+
+        /// <summary>
         /// Преобразует массив битов в матрицу битов.
         /// </summary>
         /// <param name="bitArray">Массив битов для преобразования.</param>

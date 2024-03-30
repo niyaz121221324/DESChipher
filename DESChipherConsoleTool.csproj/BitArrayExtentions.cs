@@ -94,17 +94,26 @@ namespace DESChipherConsoleTool
             if (bitArray == null)
                 throw new ArgumentNullException(nameof(bitArray));
 
-            int length = bitArray.Length;
-
-            if (length == 0)
-                return string.Empty;
-
-            if (length % 8 != 0)
+            if (bitArray.Length % 8 != 0)
                 throw new ArgumentException("BitArray length must be a multiple of 8.");
 
-            byte[] bytes = new byte[length / 8];
-            bitArray.CopyTo(bytes, 0);
-            return Encoding.ASCII.GetString(bytes);
+            StringBuilder sb = new StringBuilder(bitArray.Length / 8);
+
+            for (int i = 0; i < bitArray.Length; i += 8)
+            {
+                int symbolValue = 0;
+
+                for (int j = 0; j < 8; j++)
+                {
+                    symbolValue <<= 1;
+                    if (bitArray[i + j])
+                        symbolValue |= 1;
+                }
+
+                sb.Append((char)symbolValue);
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>

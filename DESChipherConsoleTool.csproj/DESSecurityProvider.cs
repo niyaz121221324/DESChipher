@@ -1,4 +1,6 @@
 ﻿
+using System.Xml.Linq;
+
 namespace DESChipherConsoleTool
 {
     public class DESSecurityProvider
@@ -40,48 +42,36 @@ namespace DESChipherConsoleTool
             BitArray inputBitArray = BitArrayHelper.FromString(input);
             BitArray[] blocks = inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
 
+            BitArray[] keyBlocks = GenerateKey(key);
+
             for (int i = 0; i < blocks.Length; i++)
             {
-                EncryptBlock(ref blocks[i], key);
+                blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
+
+                BitArray leftBlock = blocks[i].LeftHalf();
+                BitArray rightBlock = blocks[i].RightHalf();
+
+                BitArray previousRightBlock = rightBlock;
+                BitArray previousLeftBlock = leftBlock;
+
+                for (int j = 0; j < MAX_ROUND - 1; j++)
+                {
+                    leftBlock = previousRightBlock;
+                    rightBlock = previousLeftBlock.Xor(Function(previousRightBlock, keyBlocks[j]));
+
+                    previousLeftBlock = leftBlock;
+                    previousRightBlock = rightBlock;
+                }
+
+                leftBlock = previousLeftBlock.Xor(Function(previousRightBlock, keyBlocks.Last()));
+                rightBlock = previousRightBlock;
+
+                blocks[i] = BitArrayHelper.MergeArrays(rightBlock, leftBlock);
+                blocks[i] = _finalPermutator.Permutate(blocks[i]);
             }
 
             BitArray encryptedBitArray = BitArrayHelper.MergeArrays(blocks);
             return encryptedBitArray.GetString();
-        }
-
-        private void EncryptBlock(ref BitArray block, BitArray key)
-        {
-            block = _initialPermutator.InitialPermutate(block);
-
-            BitArray[] keyBlocks = GenerateKey(key);
-
-            BitArray leftBlock = block.LeftHalf();
-            BitArray rightBlock = block.RightHalf();
-
-            BitArray previousRightBlock = rightBlock;
-            BitArray previousLeftBlock = leftBlock;
-
-            for (int i = 1; i <= MAX_ROUND; i++)
-            {
-                leftBlock = previousRightBlock;
-                rightBlock = previousLeftBlock.Xor(Function(previousRightBlock, keyBlocks[i - 1]));
-
-                previousLeftBlock = leftBlock;
-                previousRightBlock = rightBlock;
-            }
-
-            block = BitArrayHelper.MergeArrays(rightBlock, leftBlock);
-            block = _finalPermutator.Permutate(block);
-        }
-
-        private BitArray Function(BitArray block, BitArray key)
-        {
-            BitArray expandedRightBlock = _expansionFunction.Expand(block);
-            BitArray xoredBlock = expandedRightBlock.Xor(key);
-            BitArray substitutedBlock = _sBoxPermutator.Permutate(xoredBlock);
-            BitArray permutedBlock = _landscapePermutator.Permutate(substitutedBlock);
-
-            return permutedBlock; 
         }
 
         /// <summary>
@@ -95,38 +85,46 @@ namespace DESChipherConsoleTool
             BitArray inputBitArray = BitArrayHelper.FromString(input);
             BitArray[] blocks = inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
 
+            BitArray[] keyBlocks = GenerateKey(key);
+
             for (int i = 0; i < blocks.Length; i++)
             {
-                DecryptBlock(ref blocks[i], key);
+                blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
+
+                BitArray leftBlock = blocks[i].LeftHalf();
+                BitArray rightBlock = blocks[i].RightHalf();
+
+                BitArray previousRightBlock = rightBlock;
+                BitArray previousLeftBlock = leftBlock;
+
+                for (int j = 0; j < MAX_ROUND - 1; j++)
+                {
+                    leftBlock = previousRightBlock;
+                    rightBlock = previousLeftBlock.Xor(Function(previousRightBlock, keyBlocks[MAX_ROUND - j - 1]));
+
+                    previousLeftBlock = leftBlock;
+                    previousRightBlock = rightBlock;
+                }
+
+                leftBlock = previousLeftBlock.Xor(Function(previousRightBlock, keyBlocks.First()));
+                rightBlock = previousRightBlock;
+
+                blocks[i] = BitArrayHelper.MergeArrays(rightBlock, leftBlock);
+                blocks[i] = _finalPermutator.Permutate(blocks[i]);
             }
 
             BitArray decryptedBitArray = BitArrayHelper.MergeArrays(blocks);
             return decryptedBitArray.GetString();
         }
 
-        private void DecryptBlock(ref BitArray block, BitArray key)
+        private BitArray Function(BitArray block, BitArray key)
         {
-            block = _finalPermutator.Permutate(block);
+            BitArray expandedRightBlock = _expansionFunction.Expand(block);
+            BitArray xoredBlock = expandedRightBlock.Xor(key);
+            BitArray substitutedBlock = _sBoxPermutator.Permutate(xoredBlock);
+            BitArray permutedBlock = _landscapePermutator.Permutate(substitutedBlock);
 
-            BitArray[] keyBlocks = GenerateKey(key);
-
-            BitArray leftBlock = block.LeftHalf();
-            BitArray rightBlock = block.RightHalf();
-
-            BitArray previousRightBlock = rightBlock;
-            BitArray previousLeftBlock = leftBlock;
-
-            for (int i = MAX_ROUND; i >= 1; i--)
-            {
-                rightBlock = previousRightBlock;
-                leftBlock = previousRightBlock.Xor(Function(previousLeftBlock, keyBlocks[i - 1]));
-
-                previousLeftBlock = leftBlock;
-                previousRightBlock = rightBlock;
-            }
-
-            block = BitArrayHelper.MergeArrays(rightBlock, leftBlock);
-            block = _initialPermutator.InitialPermutate(block);
+            return permutedBlock; 
         }
 
         private BitArray[] GenerateKey(BitArray key)

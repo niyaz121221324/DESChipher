@@ -9,6 +9,15 @@ class Program
         Console.WriteLine("Входная строка в битовом представлении : ");
         PrintBitArrayInfo(input);
 
+        BitMatrix[] blocks = BitMatrix.GetBlocksFromString(input);
+
+        Console.WriteLine();
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            Console.WriteLine($"block {i + 1}");
+            PrintBitMatrix(blocks[i]);
+        }
+
         Console.WriteLine();
         Console.WriteLine("Введите ключевое слово оно должно быть равно 8 символов : ");
         string keyWord = Console.ReadLine();
@@ -36,6 +45,18 @@ class Program
             byte[] bytesTest = Encoding.ASCII.GetBytes(input[i].ToString());
             BitArray array = BitArrayHelper.ConvertCorrectByteToBitArray(bytesTest);
             PrintBitArray(array);
+            Console.WriteLine();
+        }
+    }
+
+    static void PrintBitMatrix(BitMatrix matrix)
+    {
+        for (int i = 0; i < matrix.Rows; i++)
+        {
+            for (int j = 0; j < matrix.Columns; j++)
+            {
+                Console.Write((matrix[i, j] ? "1" : "0") + " ");
+            }
             Console.WriteLine();
         }
     }

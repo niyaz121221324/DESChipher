@@ -94,26 +94,17 @@ namespace DESChipherConsoleTool
             if (bitArray == null)
                 throw new ArgumentNullException(nameof(bitArray));
 
-            if (bitArray.Length % 8 != 0)
+            int length = bitArray.Length;
+
+            if (length == 0)
+                return string.Empty;
+
+            if (length % 8 != 0)
                 throw new ArgumentException("BitArray length must be a multiple of 8.");
 
-            StringBuilder sb = new StringBuilder(bitArray.Length / 8);
-
-            for (int i = 0; i < bitArray.Length; i += 8)
-            {
-                int symbolValue = 0;
-
-                for (int j = 0; j < 8; j++)
-                {
-                    symbolValue <<= 1;
-                    if (bitArray[i + j])
-                        symbolValue |= 1;
-                }
-
-                sb.Append((char)symbolValue);
-            }
-
-            return sb.ToString();
+            byte[] bytes = new byte[length / 8];
+            bitArray.CopyTo(bytes, 0);
+            return Encoding.ASCII.GetString(bytes);
         }
 
         /// <summary>
@@ -334,6 +325,40 @@ namespace DESChipherConsoleTool
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Метод который делит массив по пополам 
+        /// </summary>
+        /// <param name="array">Экземпляр массива</param>
+        /// <returns>Tuple состоящий из двух половин массива</returns>
+        public static (BitArray, BitArray) SplitIntoTwoHalves(this BitArray array)
+        {
+            BitArray[] twoHalves = array.SplitBitsIntoEqualsPortions(2);
+            BitArray leftHalf = twoHalves[0];
+            BitArray rightHalf = twoHalves[1];
+
+            return (rightHalf, leftHalf);
+        }
+
+        /// <summary>
+        /// Возвращает правую половину массива
+        /// </summary>
+        /// <param name="bitArray">Экземпляр массива</param>
+        /// <returns>Правую половину массива</returns>
+        public static BitArray RightHalf(this BitArray bitArray)
+        {
+            return SplitIntoTwoHalves(bitArray).Item2;
+        }
+
+        /// <summary>
+        /// Возвращает левую половину массива
+        /// </summary>
+        /// <param name="bitArray">Экземпляр массива</param>
+        /// <returns>Левую половину массива</returns>
+        public static BitArray LeftHalf(this BitArray bitArray)
+        {
+            return SplitIntoTwoHalves(bitArray).Item1;
         }
     }
 }

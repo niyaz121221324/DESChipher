@@ -19,9 +19,6 @@ class Program
         BitArray key = BitArrayHelper.FromString(keyWord);
         DESSecurityProvider dESSecurityProvider = new DESSecurityProvider(key);
 
-        Console.WriteLine();
-        Console.WriteLine($"Ключ в строковом представлении : {key.GetString()}");
-
         string encryptedText = dESSecurityProvider.Encrypt(input, key);
         Console.WriteLine();
         Console.WriteLine($"Зашифрованный текст : {encryptedText}");

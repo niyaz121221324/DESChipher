@@ -5,7 +5,7 @@ namespace DESChipherConsoleTool
     {
         private const int MAX_ROUND = 16;
 
-        private readonly IInitialPermutator _ipTablePermutator;
+        private readonly IInitialPermutator _initialPermutator;
         private readonly IKeyComperssionPermutator _keyComperssionPermutator;
         private readonly IFinalKeyCompressionPermutator _finalKeyCompressionPermutator;
         private readonly ISBoxPermutator _sBoxPermutator;
@@ -13,7 +13,7 @@ namespace DESChipherConsoleTool
         private readonly IPFinalPermutator _landscapePermutator;
         private readonly IFinalPermutator _finalPermutator;
 
-        public DESSecurityProvider(BitArray key, IInitialPermutator ipTablePermutator = null,
+        public DESSecurityProvider(BitArray key, IInitialPermutator initialPermutatior = null,
             IFinalKeyCompressionPermutator finalKeyCompressionPermutator = null,
             IKeyComperssionPermutator keyComperssionPermutator = null, 
             IExpansionFunction expansionFunction = null,
@@ -21,7 +21,7 @@ namespace DESChipherConsoleTool
             IPFinalPermutator landscapePermutator = null, 
             IFinalPermutator finalPermutator = null)
         {
-            _ipTablePermutator = ipTablePermutator ?? new InitialPermutator();
+            _initialPermutator = initialPermutatior ?? new InitialPermutator();
             _keyComperssionPermutator = keyComperssionPermutator ?? new KeyCompressionPermutator();
             _finalKeyCompressionPermutator = finalKeyCompressionPermutator ?? new FinalKeyCompressionPermutator();
             _expansionFunction = expansionFunction ?? new ExpansionFunction();
@@ -37,8 +37,7 @@ namespace DESChipherConsoleTool
         /// <returns>Шифр текст</returns>
         public string Encrypt(string input, BitArray key)
         {
-            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-            BitArray inputBitArray = new BitArray(inputBytes);
+            BitArray inputBitArray = BitArrayHelper.FromString(input);
             BitArray[] blocks = inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
 
             for (int i = 0; i < blocks.Length; i++)
@@ -52,24 +51,23 @@ namespace DESChipherConsoleTool
 
         private void EncryptBlock(ref BitArray block, BitArray key)
         {
-            block = _ipTablePermutator.InitialPermutate(block);
-
-            BitArray[] bitArrays = block.SplitBitsIntoEqualsPortions(2);
-            BitArray leftBlock = bitArrays[0];
-            BitArray rightBlock = bitArrays[1];
+            block = _initialPermutator.InitialPermutate(block);
 
             BitArray[] keyBlocks = GenerateKey(key);
 
-            BitArray previousRighBlock = rightBlock;
+            BitArray leftBlock = block.LeftHalf();
+            BitArray rightBlock = block.RightHalf();
+
+            BitArray previousRightBlock = rightBlock;
             BitArray previousLeftBlock = leftBlock;
 
-            for (int i = 1; i <= MAX_ROUND - 1; i++)
+            for (int i = 1; i <= MAX_ROUND; i++)
             {
-                leftBlock = previousRighBlock;
-                rightBlock = previousLeftBlock.Xor(Function(previousRighBlock, keyBlocks[i - 1]));
+                leftBlock = previousRightBlock;
+                rightBlock = previousLeftBlock.Xor(Function(previousRightBlock, keyBlocks[i - 1]));
 
                 previousLeftBlock = leftBlock;
-                previousRighBlock = rightBlock;
+                previousRightBlock = rightBlock;
             }
 
             block = BitArrayHelper.MergeArrays(rightBlock, leftBlock);
@@ -94,8 +92,7 @@ namespace DESChipherConsoleTool
         /// <returns>Дешифрованный текст</returns>
         public string Decrypt(string input, BitArray key)
         {
-            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-            BitArray inputBitArray = new BitArray(inputBytes);
+            BitArray inputBitArray = BitArrayHelper.FromString(input);
             BitArray[] blocks = inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
 
             for (int i = 0; i < blocks.Length; i++)
@@ -111,26 +108,25 @@ namespace DESChipherConsoleTool
         {
             block = _finalPermutator.Permutate(block);
 
-            BitArray[] bitArrays = block.SplitBitsIntoEqualsPortions(2);
-            BitArray leftBlock = bitArrays[0];
-            BitArray rightBlock = bitArrays[1];
-
             BitArray[] keyBlocks = GenerateKey(key);
 
-            BitArray previousRighBlock = rightBlock;
+            BitArray leftBlock = block.LeftHalf();
+            BitArray rightBlock = block.RightHalf();
+
+            BitArray previousRightBlock = rightBlock;
             BitArray previousLeftBlock = leftBlock;
 
-            for (int i = 1; i <= MAX_ROUND - 1; i++)
+            for (int i = MAX_ROUND; i >= 1; i--)
             {
-                leftBlock = previousRighBlock;
-                rightBlock = previousLeftBlock.Xor(Function(previousLeftBlock, keyBlocks[i - 1]));
+                rightBlock = previousRightBlock;
+                leftBlock = previousRightBlock.Xor(Function(previousLeftBlock, keyBlocks[i - 1]));
 
                 previousLeftBlock = leftBlock;
-                previousRighBlock = rightBlock;
+                previousRightBlock = rightBlock;
             }
 
             block = BitArrayHelper.MergeArrays(rightBlock, leftBlock);
-            block = _ipTablePermutator.InitialPermutate(block);
+            block = _initialPermutator.InitialPermutate(block);
         }
 
         private BitArray[] GenerateKey(BitArray key)

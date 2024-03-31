@@ -369,5 +369,32 @@ namespace DESChipherConsoleTool
         {
             return SplitIntoTwoHalves(bitArray).Item1;
         }
+
+        /// <summary>
+        /// Метод для склеиван6ия двух чвастей массива в оджин массив
+        /// </summary>
+        /// <param name="bitArray">Экземпляр битового массива</param>
+        /// <param name="leftHalf">Левая часть массива</param>
+        /// <param name="rightHalf">Правая часить массива</param>
+        /// <exception cref="ArgumentException">Если сумма правой и левой части массива не меньше исходного массива</exception>
+        public static void AssignHalves(this BitArray bitArray, BitArray leftHalf, BitArray rightHalf)
+        {
+            if (leftHalf.Length + rightHalf.Length != bitArray.Length)
+            {
+                throw new ArgumentException("The sum of lengths of left and right halves must be equal to the length of the BitArray.");
+            }
+
+            // Присваиваем значения левой части
+            for (int i = 0; i < leftHalf.Length; i++)
+            {
+                bitArray[i] = leftHalf[i];
+            }
+
+            // Присваиваем значения правой части
+            for (int i = 0; i < rightHalf.Length; i++)
+            {
+                bitArray[i + leftHalf.Length] = rightHalf[i];
+            }
+        }
     }
 }

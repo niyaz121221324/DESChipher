@@ -347,7 +347,7 @@ namespace DESChipherConsoleTool
             BitArray leftHalf = twoHalves[0];
             BitArray rightHalf = twoHalves[1];
 
-            return (rightHalf, leftHalf);
+            return (leftHalf, rightHalf);
         }
 
         /// <summary>
@@ -369,7 +369,7 @@ namespace DESChipherConsoleTool
         {
             return SplitIntoTwoHalves(bitArray).Item1;
         }
-
+         
         /// <summary>
         /// Метод для склеиван6ия двух чвастей массива в оджин массив
         /// </summary>

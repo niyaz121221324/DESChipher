@@ -30,6 +30,7 @@ namespace DESChipherConsoleTool
             _finalPermutator = finalPermutator ?? new FinalPermutator();
         }
 
+        #region Шифрование алгоритмом DES
         /// <summary>
         /// Шифрует входной текст с использованием алгоритма DES.
         /// </summary>
@@ -44,13 +45,37 @@ namespace DESChipherConsoleTool
             for (int i = 0; i < blocks.Length; i++)
             {
                 blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
-                EncryptBlock(blocks[i], keyBlocks);
+                EncryptBlock(ref blocks[i], keyBlocks);
                 blocks[i] = _finalPermutator.Permutate(blocks[i]);
             }
             
             return MergeBlocksToString(blocks);
         }
 
+        // Метод для шифрования алгоритмом DES
+        private void EncryptBlock(ref BitArray block, BitArray[] keyBlocks)
+        {
+            BitArray leftBlock = block.LeftHalf();
+            BitArray rightBlock = block.RightHalf();
+
+            for (int j = 0; j < MAX_ROUND; j++)
+            {
+                ProcessEncryptRound(ref leftBlock, ref rightBlock, keyBlocks[j]);
+            }
+
+            block.AssignHalves(rightBlock, leftBlock);
+        }
+
+        private void ProcessEncryptRound(ref BitArray leftBlock, ref BitArray rightBlock, BitArray keyBlock)
+        {
+            BitArray functionResult = Function(rightBlock, keyBlock);
+            BitArray temp = rightBlock;
+            rightBlock = leftBlock.Xor(functionResult);
+            leftBlock = temp;
+        }
+        #endregion 
+
+        #region Дешифрование алгоритмом DES
         /// <summary>
         /// Дешифрует входной текст, зашифрованный с использованием алгоритма DES.
         /// </summary>
@@ -60,56 +85,45 @@ namespace DESChipherConsoleTool
         public string Decrypt(string input, BitArray key)
         {
             BitArray[] blocks = PrepareBlocks(input);
-            BitArray[] keyBlocks = GenerateKey(key, false);
+            BitArray[] keyBlocks = GenerateKey(key);
 
             for (int i = 0; i < blocks.Length; i++)
             {
-                blocks[i] = _finalPermutator.Permutate(blocks[i]);
-                DecryptBlock(blocks[i], keyBlocks);
                 blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
+                DecryptBlock(blocks[i], keyBlocks);
+                blocks[i] = _finalPermutator.Permutate(blocks[i]);
             }
 
             return MergeBlocksToString(blocks);
         }
 
-        private BitArray[] PrepareBlocks(string input)
-        {
-            BitArray inputBitArray = BitArrayHelper.FromString(input);
-            return inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
-        }
-
-        private void EncryptBlock(BitArray block, BitArray[] keyBlocks)
-        {
-            BitArray leftBlock = block.LeftHalf();
-            BitArray rightBlock = block.RightHalf();
-
-            for (int j = 0; j < MAX_ROUND; j++)
-            {
-                ProcessRound(ref leftBlock, ref rightBlock, keyBlocks[j]);
-            }
-
-            block.AssignHalves(rightBlock, leftBlock);
-        }
-
+        // Метод для дешифрования блока текста алгоритмом DES
         private void DecryptBlock(BitArray block, BitArray[] keyBlocks)
         {
             BitArray leftBlock = block.LeftHalf();
             BitArray rightBlock = block.RightHalf();
 
-            for (int j = 0; j < MAX_ROUND; j++)
+            for (int j = MAX_ROUND - 1; j >= 0; j--)
             {
-                ProcessRound(ref leftBlock, ref rightBlock, keyBlocks[j]);
+                ProcessDecryptRound(ref leftBlock, ref rightBlock, keyBlocks[j]);
             }
 
             block.AssignHalves(rightBlock, leftBlock);
         }
 
-        private void ProcessRound(ref BitArray leftBlock, ref BitArray rightBlock, BitArray keyBlock)
+        private void ProcessDecryptRound(ref BitArray leftBlock, ref BitArray rightBlock, BitArray keyBlock)
         {
-            BitArray functionResult = Function(rightBlock, keyBlock);
-            BitArray temp = rightBlock;
-            rightBlock = leftBlock.Xor(functionResult);
-            leftBlock = temp;
+            BitArray functionResult = Function(leftBlock, keyBlock);
+            BitArray temp = leftBlock;
+            leftBlock = rightBlock.Xor(functionResult);
+            rightBlock = temp;
+        }
+        #endregion
+
+        private BitArray[] PrepareBlocks(string input)
+        {
+            BitArray inputBitArray = BitArrayHelper.FromString(input);
+            return inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
         }
 
         private string MergeBlocksToString(BitArray[] blocks)
@@ -118,6 +132,7 @@ namespace DESChipherConsoleTool
             return encryptedBitArray.GetString();
         }
 
+        // Функция F для преобразования
         private BitArray Function(BitArray block, BitArray key)
         {
             BitArray expandedRightBlock = _expansionFunction.Expand(block);
@@ -127,17 +142,14 @@ namespace DESChipherConsoleTool
             return permutedBlock;
         }
 
-        private BitArray[] GenerateKey(BitArray key, bool isEncrypt = true)
+        // Метод для генерации ключей для алгоритма DES
+        private BitArray[] GenerateKey(BitArray key)
         {
             key = _keyComperssionPermutator.Permutate(key);
 
             BitArray[] roundKeys = new BitArray[MAX_ROUND];
-
-            int startRound = isEncrypt ? 0 : MAX_ROUND - 1;
-            int endRound = isEncrypt ? MAX_ROUND : -1;
-            int roundStep = isEncrypt ? 1 : -1;
-
-            for (int round = startRound; round != endRound; round += roundStep)
+            
+            for (int round = 0; round < MAX_ROUND; round++)
             {
                 roundKeys[round] = GenerateRoundKey(key, round);
             }

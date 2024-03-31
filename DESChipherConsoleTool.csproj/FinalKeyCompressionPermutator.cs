@@ -15,7 +15,6 @@ namespace DESChipherConsoleTool
             45, 41, 49, 35, 28, 31
         };
 
-
         public BitArray Permutate(BitArray input)
         {
             bool[] bools = new bool[keyPC2Table.Length];

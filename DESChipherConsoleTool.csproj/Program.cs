@@ -14,7 +14,7 @@ class Program
         Console.WriteLine();
         for (int i = 0; i < blocks.Length; i++)
         {
-            Console.WriteLine($"block {i + 1}");
+            Console.WriteLine($"блокуа {i + 1}");
             PrintBitMatrix(blocks[i]);
         }
 

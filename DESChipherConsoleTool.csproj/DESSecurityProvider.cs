@@ -161,7 +161,7 @@ namespace DESChipherConsoleTool
         {
             BitArray leftKeyHalf = key.LeftHalf();
             BitArray rightKeyHalf = key.RightHalf();
-
+            
             int shiftValue = GetShiftValue(round + 1);
 
             leftKeyHalf = leftKeyHalf.ShiftArrayLeft(shiftValue);

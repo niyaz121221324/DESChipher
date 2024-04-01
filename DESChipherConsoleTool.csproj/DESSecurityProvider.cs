@@ -13,7 +13,8 @@ namespace DESChipherConsoleTool
         private readonly IPFinalPermutator _landscapePermutator;
         private readonly IFinalPermutator _finalPermutator;
 
-        public DESSecurityProvider(BitArray key, IInitialPermutator initialPermutatior = null,
+        public DESSecurityProvider(BitArray key, 
+            IInitialPermutator initialPermutatior = null,
             IFinalKeyCompressionPermutator finalKeyCompressionPermutator = null,
             IKeyComperssionPermutator keyComperssionPermutator = null, 
             IExpansionFunction expansionFunction = null,

@@ -343,9 +343,14 @@ namespace DESChipherConsoleTool
         /// <returns>Tuple состоящий из двух половин массива</returns>
         public static (BitArray, BitArray) SplitIntoTwoHalves(this BitArray array)
         {
-            BitArray[] twoHalves = array.SplitBitsIntoEqualsPortions(2);
-            BitArray leftHalf = twoHalves[0];
-            BitArray rightHalf = twoHalves[1];
+            BitArray leftHalf = new BitArray(array.Length / 2);
+            BitArray rightHalf = new BitArray(array.Length / 2);
+
+            for (int i = 0; i < array.Length / 2; i++)
+            {
+                leftHalf[i] = array[i];
+                rightHalf[i] = array[i + array.Length / 2];
+            }
 
             return (leftHalf, rightHalf);
         }
@@ -357,7 +362,7 @@ namespace DESChipherConsoleTool
         /// <returns>Правую половину массива</returns>
         public static BitArray RightHalf(this BitArray bitArray)
         {
-            return SplitIntoTwoHalves(bitArray).Item2;
+            return bitArray.SplitIntoTwoHalves().Item2;
         }
 
         /// <summary>
@@ -367,9 +372,9 @@ namespace DESChipherConsoleTool
         /// <returns>Левую половину массива</returns>
         public static BitArray LeftHalf(this BitArray bitArray)
         {
-            return SplitIntoTwoHalves(bitArray).Item1;
+            return bitArray.SplitIntoTwoHalves().Item1;
         }
-         
+
         /// <summary>
         /// Метод для склеиван6ия двух чвастей массива в оджин массив
         /// </summary>
@@ -381,7 +386,7 @@ namespace DESChipherConsoleTool
         {
             if (leftHalf.Length + rightHalf.Length != bitArray.Length)
             {
-                throw new ArgumentException("The sum of lengths of left and right halves must be equal to the length of the BitArray.");
+                throw new ArgumentException("Сумма длин левой и правой половин должна быть равна длине BitArray..");
             }
 
             // Присваиваем значения левой части
@@ -394,6 +399,20 @@ namespace DESChipherConsoleTool
             for (int i = 0; i < rightHalf.Length; i++)
             {
                 bitArray[i + leftHalf.Length] = rightHalf[i];
+            }
+        }
+
+        /// <summary>
+        /// Метод для получения массива бит в обратном порядке
+        /// </summary>
+        /// <param name="bitArray">Екземпляр массива</param>
+        public static void Reverse(this BitArray bitArray)
+        {
+            for (int i = bitArray.Length - 1; i >= 0; i--)
+            {
+                var temp = bitArray[i];
+                bitArray[bitArray.Length - 1 - i] = bitArray[i];
+                bitArray[i] = temp;
             }
         }
     }

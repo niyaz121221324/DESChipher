@@ -49,8 +49,9 @@ namespace DESChipherConsoleTool
                 EncryptBlock(ref blocks[i], keyBlocks);
                 blocks[i] = _finalPermutator.Permutate(blocks[i]);
             }
-            
-            return MergeBlocksToString(blocks);
+
+            BitArray encryptedBitArray = BitArrayHelper.MergeArrays(blocks);
+            return encryptedBitArray.GetString();
         }
 
         // Метод для шифрования алгоритмом DES
@@ -61,18 +62,13 @@ namespace DESChipherConsoleTool
 
             for (int j = 0; j < MAX_ROUND; j++)
             {
-                ProcessEncryptRound(ref leftBlock, ref rightBlock, keyBlocks[j]);
+                BitArray functionResult = Function(rightBlock, keyBlocks[j]);
+                BitArray temp = rightBlock;
+                rightBlock = leftBlock.Xor(functionResult);
+                leftBlock = temp;
             }
 
-            block.AssignHalves(rightBlock, leftBlock);
-        }
-
-        private void ProcessEncryptRound(ref BitArray leftBlock, ref BitArray rightBlock, BitArray keyBlock)
-        {
-            BitArray functionResult = Function(rightBlock, keyBlock);
-            BitArray temp = rightBlock;
-            rightBlock = leftBlock.Xor(functionResult);
-            leftBlock = temp;
+            block.AssignHalves(leftBlock, rightBlock);
         }
         #endregion 
 
@@ -91,33 +87,29 @@ namespace DESChipherConsoleTool
             for (int i = 0; i < blocks.Length; i++)
             {
                 blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
-                DecryptBlock(blocks[i], keyBlocks);
+                DecryptBlock(ref blocks[i], keyBlocks);
                 blocks[i] = _finalPermutator.Permutate(blocks[i]);
             }
 
-            return MergeBlocksToString(blocks);
+            BitArray encryptedBitArray = BitArrayHelper.MergeArrays(blocks);
+            return encryptedBitArray.GetString();
         }
 
         // Метод для дешифрования блока текста алгоритмом DES
-        private void DecryptBlock(BitArray block, BitArray[] keyBlocks)
+        private void DecryptBlock(ref BitArray block, BitArray[] keyBlocks)
         {
             BitArray leftBlock = block.LeftHalf();
             BitArray rightBlock = block.RightHalf();
 
             for (int j = MAX_ROUND - 1; j >= 0; j--)
             {
-                ProcessDecryptRound(ref leftBlock, ref rightBlock, keyBlocks[j]);
+                BitArray functionResult = Function(leftBlock, keyBlocks[j]);
+                BitArray temp = leftBlock;
+                leftBlock = rightBlock.Xor(functionResult);
+                rightBlock = temp;
             }
 
-            block.AssignHalves(rightBlock, leftBlock);
-        }
-
-        private void ProcessDecryptRound(ref BitArray leftBlock, ref BitArray rightBlock, BitArray keyBlock)
-        {
-            BitArray functionResult = Function(leftBlock, keyBlock);
-            BitArray temp = leftBlock;
-            leftBlock = rightBlock.Xor(functionResult);
-            rightBlock = temp;
+            block.AssignHalves(leftBlock, rightBlock);
         }
         #endregion
 
@@ -125,13 +117,7 @@ namespace DESChipherConsoleTool
         {
             BitArray inputBitArray = BitArrayHelper.FromString(input);
             return inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
-        }
-
-        private string MergeBlocksToString(BitArray[] blocks)
-        {
-            BitArray encryptedBitArray = BitArrayHelper.MergeArrays(blocks);
-            return encryptedBitArray.GetString();
-        }
+        } 
 
         // Функция F для преобразования
         private BitArray Function(BitArray block, BitArray key)

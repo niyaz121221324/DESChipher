@@ -44,9 +44,7 @@ namespace DESChipherConsoleTool
 
             for (int i = 0; i < blocks.Length; i++)
             {
-                blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
                 EncryptBlock(ref blocks[i], keyBlocks);
-                blocks[i] = _finalPermutator.Permutate(blocks[i]);
             }
 
             BitArray encryptedBitArray = BitArrayHelper.MergeArrays(blocks);
@@ -56,6 +54,8 @@ namespace DESChipherConsoleTool
         // Метод для шифрования алгоритмом DES
         private void EncryptBlock(ref BitArray block, BitArray[] keyBlocks)
         {
+            block = _initialPermutator.InitialPermutate(block);
+
             BitArray leftBlock = block.LeftHalf();
             BitArray rightBlock = block.RightHalf();
 
@@ -67,7 +67,13 @@ namespace DESChipherConsoleTool
                 leftBlock = temp;
             }
 
+            BitArray tempBlock = rightBlock;
+            rightBlock = leftBlock;
+            leftBlock = tempBlock;
+
             block.AssignHalves(leftBlock, rightBlock);
+
+            block = _finalPermutator.Permutate(block);
         }
         #endregion 
 
@@ -85,9 +91,7 @@ namespace DESChipherConsoleTool
 
             for (int i = 0; i < blocks.Length; i++)
             {
-                blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
                 DecryptBlock(ref blocks[i], keyBlocks);
-                blocks[i] = _finalPermutator.Permutate(blocks[i]);
             }
 
             BitArray encryptedBitArray = BitArrayHelper.MergeArrays(blocks);
@@ -97,8 +101,14 @@ namespace DESChipherConsoleTool
         // Метод для дешифрования блока текста алгоритмом DES
         private void DecryptBlock(ref BitArray block, BitArray[] keyBlocks)
         {
+            block = _initialPermutator.InitialPermutate(block);
+
             BitArray leftBlock = block.LeftHalf();
             BitArray rightBlock = block.RightHalf();
+
+            BitArray tempBlock = rightBlock;
+            rightBlock = leftBlock;
+            leftBlock = tempBlock;
 
             for (int j = MAX_ROUND - 1; j >= 0; j--)
             {
@@ -109,6 +119,8 @@ namespace DESChipherConsoleTool
             }
 
             block.AssignHalves(leftBlock, rightBlock);
+
+            block = _finalPermutator.Permutate(block);
         }
         #endregion
 

@@ -18,14 +18,7 @@ class Program
             PrintBitMatrix(blocks[i]);
         }
 
-        Console.WriteLine();
-        Console.WriteLine("Введите ключевое слово оно должно быть равно 8 символов : ");
-        string keyWord = Console.ReadLine();
-
-        if (keyWord.Length != 8)
-            throw new ArgumentException("Ключ должен быть размером 64 бита");
-
-        BitArray key = BitArrayHelper.FromString(keyWord);
+        BitArray key = BitArrayHelper.GenerateRandomBitArray();
         DESSecurityProvider dESSecurityProvider = new DESSecurityProvider();
 
         string encryptedText = dESSecurityProvider.Encrypt(input, key);

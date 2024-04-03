@@ -10,7 +10,7 @@ namespace DESChipherConsoleTool
         private readonly IFinalKeyCompressionPermutator _finalKeyCompressionPermutator;
         private readonly ISBoxPermutator _sBoxPermutator;
         private readonly IExpansionFunction _expansionFunction;
-        private readonly IPFinalPermutator _landscapePermutator;
+        private readonly IPFinalPermutator _pBoxPermutator;
         private readonly IFinalPermutator _finalPermutator;
 
         public DESSecurityProvider(IInitialPermutator initialPermutatior = null,
@@ -18,7 +18,7 @@ namespace DESChipherConsoleTool
             IKeyComperssionPermutator keyComperssionPermutator = null, 
             IExpansionFunction expansionFunction = null,
             ISBoxPermutator sBoxPermutator = null,
-            IPFinalPermutator landscapePermutator = null, 
+            IPFinalPermutator pBoxPermutator = null, 
             IFinalPermutator finalPermutator = null)
         {
             _initialPermutator = initialPermutatior ?? new InitialPermutator();
@@ -26,7 +26,7 @@ namespace DESChipherConsoleTool
             _finalKeyCompressionPermutator = finalKeyCompressionPermutator ?? new FinalKeyCompressionPermutator();
             _expansionFunction = expansionFunction ?? new ExpansionFunction();
             _sBoxPermutator = sBoxPermutator ?? new SBoxPermutator();
-            _landscapePermutator = landscapePermutator ?? new PBoxPermutator();
+            _pBoxPermutator = pBoxPermutator ?? new PBoxPermutator();
             _finalPermutator = finalPermutator ?? new FinalPermutator();
         }
 
@@ -124,7 +124,7 @@ namespace DESChipherConsoleTool
             BitArray expandedRightBlock = _expansionFunction.Expand(block);
             BitArray xoredBlock = expandedRightBlock.Xor(key);
             BitArray substitutedBlock = _sBoxPermutator.Permutate(xoredBlock);
-            BitArray permutedBlock = _landscapePermutator.Permutate(substitutedBlock);
+            BitArray permutedBlock = _pBoxPermutator.Permutate(substitutedBlock);
             return permutedBlock;
         }
 

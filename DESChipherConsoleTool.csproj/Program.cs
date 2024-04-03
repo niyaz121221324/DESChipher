@@ -26,7 +26,7 @@ class Program
             throw new ArgumentException("Ключ должен быть размером 64 бита");
 
         BitArray key = BitArrayHelper.FromString(keyWord);
-        DESSecurityProvider dESSecurityProvider = new DESSecurityProvider(key);
+        DESSecurityProvider dESSecurityProvider = new DESSecurityProvider();
 
         string encryptedText = dESSecurityProvider.Encrypt(input, key);
         Console.WriteLine();

@@ -2,7 +2,7 @@
 
 namespace DESChipherConsoleTool
 {
-    class PFinalPermutator : IPFinalPermutator
+    class PBoxPermutator : IPFinalPermutator
     {
         private readonly int[] PTable =
         {

@@ -26,7 +26,7 @@ namespace DESChipherConsoleTool
             _finalKeyCompressionPermutator = finalKeyCompressionPermutator ?? new FinalKeyCompressionPermutator();
             _expansionFunction = expansionFunction ?? new ExpansionFunction();
             _sBoxPermutator = sBoxPermutator ?? new SBoxPermutator();
-            _landscapePermutator = landscapePermutator ?? new PFinalPermutator();
+            _landscapePermutator = landscapePermutator ?? new PBoxPermutator();
             _finalPermutator = finalPermutator ?? new FinalPermutator();
         }
 

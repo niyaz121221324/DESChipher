@@ -1,6 +1,4 @@
 ﻿
-using System.Runtime.InteropServices.Marshalling;
-
 namespace DESChipherConsoleTool
 {
     public class DESSecurityProvider

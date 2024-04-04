@@ -14,12 +14,16 @@ class Program
         Console.WriteLine();
         for (int i = 0; i < blocks.Length; i++)
         {
-            Console.WriteLine($"блока {i + 1}");
+            Console.WriteLine($"блок {i + 1}");
             PrintBitMatrix(blocks[i]);
         }
 
         BitArray key = BitArrayHelper.GenerateRandomBitArray();
         DESSecurityProvider dESSecurityProvider = new DESSecurityProvider();
+
+        string keyWord = key.GetString();
+        Console.WriteLine();
+        Console.WriteLine($"Ключ в битовом представлении : {keyWord}");
 
         string encryptedText = dESSecurityProvider.Encrypt(input, key);
         Console.WriteLine();

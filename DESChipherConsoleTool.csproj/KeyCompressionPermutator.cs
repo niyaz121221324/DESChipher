@@ -15,16 +15,34 @@ namespace DESChipherConsoleTool
             48, 40, 32, 24, 16,  8,  0
         };
 
+        //public BitArray Permutate(BitArray input)
+        //{
+        //    bool[] bools = new bool[keyPC1.Length];
+
+        //    for (int i = 0; i < bools.Length; i++)
+        //    {
+        //        bools[i] = input[keyPC1[i]];
+        //    }
+
+        //    return new BitArray(bools);
+        //}
+
         public BitArray Permutate(BitArray input)
         {
-            bool[] bools = new bool[keyPC1.Length];
+            if (input.Length != 64)
+                throw new ArgumentException("Размер ключа должен быть не менее 64 бит");
 
-            for (int i = 0; i < bools.Length; i++)
+            List<bool> result = new List<bool>();
+
+            for (int i = 0; i < input.Length; i++)
             {
-                bools[i] = input[keyPC1[i]];
+                if (i + 1 % 8 != 0)
+                {
+                    result.Add(input[i]);
+                }
             }
 
-            return new BitArray(bools);
+            return new BitArray(result.ToArray());
         }
     }
 }

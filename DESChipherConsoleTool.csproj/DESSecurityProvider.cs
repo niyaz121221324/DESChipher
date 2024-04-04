@@ -1,4 +1,6 @@
 ﻿
+using System.Runtime.InteropServices.Marshalling;
+
 namespace DESChipherConsoleTool
 {
     public class DESSecurityProvider
@@ -67,12 +69,7 @@ namespace DESChipherConsoleTool
                 leftBlock = temp;
             }
 
-            BitArray tempBlock = rightBlock;
-            rightBlock = leftBlock;
-            leftBlock = tempBlock;
-
-            block.AssignHalves(leftBlock, rightBlock);
-
+            block.AssignHalves(rightBlock, leftBlock); // меняем блоки местами в последнем раунде и объеденяем
             block = _finalPermutator.Permutate(block);
         }
         #endregion 
@@ -101,14 +98,11 @@ namespace DESChipherConsoleTool
         // Метод для дешифрования блока текста алгоритмом DES
         private void DecryptBlock(ref BitArray block, BitArray[] keyBlocks)
         {
-            block = _initialPermutator.InitialPermutate(block);
-
-            BitArray leftBlock = block.LeftHalf();
-            BitArray rightBlock = block.RightHalf();
-
-            BitArray tempBlock = rightBlock;
-            rightBlock = leftBlock;
-            leftBlock = tempBlock;
+            block = _finalPermutator.Permutate(block);
+            
+            // Меняем блоки местами в первом раунде для обратной функции сети фейстеля
+            BitArray leftBlock = block.RightHalf();
+            BitArray rightBlock = block.LeftHalf();
 
             for (int j = MAX_ROUND - 1; j >= 0; j--)
             {
@@ -119,8 +113,7 @@ namespace DESChipherConsoleTool
             }
 
             block.AssignHalves(leftBlock, rightBlock);
-
-            block = _finalPermutator.Permutate(block);
+            block = _initialPermutator.InitialPermutate(block);
         }
         #endregion
 

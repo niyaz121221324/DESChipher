@@ -117,7 +117,12 @@ namespace DESChipherConsoleTool
             return new BitArray(bools.ToArray());
         }
 
-        private static bool[] ConvertToBinary(int input)
+        /// <summary>
+        /// Метод который возвращает 4 бита из числа 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static bool[] ConvertToBinary(int input)
         {
             string binaryString = Convert.ToString(input, 2);
             bool[] boolArray = new bool[4];

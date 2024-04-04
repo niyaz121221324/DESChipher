@@ -72,13 +72,12 @@ namespace DESChipherConsoleTool
             if (input.Length != 48)
                 throw new ArgumentException("Unable to perform s-box permutation: array dimensions are incorrect.");
 
-            int[][,] boxes = new int[][,] 
+            int[][,] boxes =  
             {
                 SBox1, SBox2, SBox3, SBox4, SBox5, SBox6, SBox7, SBox8
             };
 
             BitArray[] bitArrays = input.SplitArrayIntoEqualParts(6).ToArray();
-
             int[] res = new int[bitArrays.Length];
 
             for (int i = 0; i < bitArrays.Length; i++)
@@ -101,7 +100,6 @@ namespace DESChipherConsoleTool
             }
 
             BitArray rowBitArray = new BitArray(rowBoolArray);
-
             return rowBitArray.ToInt32();
         }
 
@@ -115,7 +113,6 @@ namespace DESChipherConsoleTool
             }
 
             BitArray colBitArray = new BitArray(colBoolArray);
-
             return colBitArray.ToInt32();
         }
     }

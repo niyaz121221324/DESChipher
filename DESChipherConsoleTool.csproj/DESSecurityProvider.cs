@@ -82,11 +82,11 @@ namespace DESChipherConsoleTool
         public string Decrypt(string input, BitArray key)
         {
             BitArray[] blocks = PrepareBlocks(input);
-            BitArray[] keyBlocks = GenerateKey(key);
+            BitArray[] keyBlocks = GenerateKey(key, false);
 
             for (int i = 0; i < blocks.Length; i++)
             {
-                DecryptBlock(ref blocks[i], keyBlocks);
+                EncryptBlock(ref blocks[i], keyBlocks);
             }
 
             BitArray encryptedBitArray = BitArrayHelper.MergeArrays(blocks);
@@ -119,46 +119,77 @@ namespace DESChipherConsoleTool
         {
             BitArray inputBitArray = BitArrayHelper.FromString(input);
             return inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
-        } 
+        }
 
-        // Функция F для преобразования
+        // Выполняет функцию F для преобразования блока данных.
+        // Входные параметры:
+        // - block: блок данных, который подвергается преобразованию.
+        // - key: ключ, используемый для преобразования блока.
+        // Результат работы функции F:
+        // - permutedBlock: преобразованный блок данных после выполнения всех этапов.
         private BitArray Function(BitArray block, BitArray key)
         {
+            // Шаг 1: Расширение блока
             BitArray expandedRightBlock = _expansionFunction.Expand(block);
+
+            // Шаг 2: Применение операции XOR к расширенному блоку и ключу
             BitArray xoredBlock = expandedRightBlock.Xor(key);
+
+            // Шаг 3: Применение S-боксов для замены значений в блоке
             BitArray substitutedBlock = _sBoxPermutator.Permutate(xoredBlock);
+
+            // Шаг 4: Перестановка значений в блоке с помощью P-бокса
             BitArray permutedBlock = _pBoxPermutator.Permutate(substitutedBlock);
+
+            // Возвращаем преобразованный блок данных
             return permutedBlock;
         }
 
         // Метод для генерации ключей для алгоритма DES
-        private BitArray[] GenerateKey(BitArray key)
+        private BitArray[] GenerateKey(BitArray key, bool isEncryption = true)
         {
             key = _keyComperssionPermutator.Permutate(key);
 
             BitArray[] roundKeys = new BitArray[MAX_ROUND];
-            
-            for (int round = 0; round < MAX_ROUND; round++)
+
+            for (int round = GetStartingRound(isEncryption); IsRoundConditionMet(round, isEncryption); round = UpdateRound(round, isEncryption))
             {
-                roundKeys[round] = GenerateRoundKey(key, round);
+                BitArray leftKeyHalf = key.LeftHalf();
+                BitArray rightKeyHalf = key.RightHalf();
+
+                int shiftValue = GetShiftValue(round + 1);
+
+                leftKeyHalf = leftKeyHalf.ShiftArrayLeft(shiftValue);
+                rightKeyHalf = rightKeyHalf.ShiftArrayLeft(shiftValue);
+
+                key.AssignHalves(leftKeyHalf, rightKeyHalf);
+
+                roundKeys[round] = _finalKeyCompressionPermutator.Permutate(key);
             }
 
             return roundKeys;
         }
 
-        private BitArray GenerateRoundKey(BitArray key, int round)
+        private int GetStartingRound(bool isEncryption)
         {
-            BitArray leftKeyHalf = key.LeftHalf();
-            BitArray rightKeyHalf = key.RightHalf();
-            
-            int shiftValue = GetShiftValue(round + 1);
+            // Определяет начальный раунд в зависимости от режима работы (шифрование или расшифрование).
+            // Для шифрования возвращает 0 (первый раунд), для расшифрования возвращает максимальное значение раунда (MAX_ROUND).
+            return isEncryption ? 0 : MAX_ROUND;
+        }
 
-            leftKeyHalf = leftKeyHalf.ShiftArrayLeft(shiftValue);
-            rightKeyHalf = rightKeyHalf.ShiftArrayLeft(shiftValue);
+        private bool IsRoundConditionMet(int round, bool isEncryption)
+        {
+            // Проверяет, выполнено ли условие для продолжения цикла генерации ключа.
+            // Для шифрования проверяет, если текущий раунд меньше максимального значения (MAX_ROUND).
+            // Для расшифрования проверяет, если текущий раунд больше или равен 1.
+            return isEncryption ? round < MAX_ROUND - 1 : round >= 0;
+        }
 
-            key.AssignHalves(leftKeyHalf, rightKeyHalf);
-
-            return _finalKeyCompressionPermutator.Permutate(key);
+        private int UpdateRound(int round, bool isEncryption)
+        {
+            // Обновляет счетчик раунда для следующей итерации цикла генерации ключа.
+            // Для шифрования увеличивает счетчик раунда на 1, для расшифрования уменьшает счетчик раунда на 1.
+            return isEncryption ? round + 1 : round - 1;
         }
 
         private int GetShiftValue(int round)

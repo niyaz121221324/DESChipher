@@ -51,7 +51,7 @@ namespace DESChipherConsoleTool
         public static BitArray ApplyOperation(BitArray array, BitArray otherArray, Func<bool, bool, bool> func)
         {
             if (array.Length != otherArray.Length)
-                throw new ArgumentException("Exception: The array sizes do not match.");
+                throw new ArgumentException("Не совпадают длинны массивов");
 
             BitArray bitArray = new BitArray(new bool[array.Length]);
 

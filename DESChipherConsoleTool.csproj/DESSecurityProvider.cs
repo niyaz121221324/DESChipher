@@ -30,166 +30,106 @@ namespace DESChipherConsoleTool
             _finalPermutator = finalPermutator ?? new FinalPermutator();
         }
 
-        #region Шифрование алгоритмом DES
         /// <summary>
-        /// Шифрует входной текст с использованием алгоритма DES.
+        /// Метод для шифрования текста алгоритмом DES
         /// </summary>
         /// <param name="input">Текст для шифрования</param>
         /// <param name="key">Ключ для шифрования</param>
         /// <returns>Шифр текст</returns>
         public string Encrypt(string input, BitArray key)
         {
-            BitArray[] blocks = PrepareBlocks(input);
-            BitArray[] keyBlocks = GenerateKey(key);
+            BitArray[] blocks = BitArrayHelper.FromString(input).SplitArrayIntoEqualParts().ToArray();
+            BitArray[] keys = GenerateKeys(key, true);
 
             for (int i = 0; i < blocks.Length; i++)
             {
-                EncryptBlock(ref blocks[i], keyBlocks);
+                blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
+                blocks[i] = PerformRound(blocks[i], keys, true);
+                blocks[i] = _finalPermutator.Permutate(blocks[i]);
             }
 
-            BitArray encryptedBitArray = BitArrayHelper.MergeArrays(blocks);
-            return encryptedBitArray.GetString();
+            return BitArrayHelper.MergeArrays(blocks).GetString();
         }
 
-        // Метод для шифрования алгоритмом DES
-        private void EncryptBlock(ref BitArray block, BitArray[] keyBlocks)
+        /// <summary>
+        /// Метод для дешифрования текста алгоритмом DES
+        /// </summary>
+        /// <param name="input">Шифр текст</param>
+        /// <param name="key">Ключ для дешифрвания</param>
+        /// <returns>Расшифрованный текст</returns>
+        public string Decrypt(string input, BitArray key)
         {
-            block = _initialPermutator.InitialPermutate(block);
+            BitArray[] blocks = BitArrayHelper.FromString(input).SplitArrayIntoEqualParts().ToArray();
+            BitArray[] keys = GenerateKeys(key, false);
 
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
+                blocks[i] = PerformRound(blocks[i], keys, false);
+                blocks[i] = _finalPermutator.Permutate(blocks[i]);
+            }
+
+            return BitArrayHelper.MergeArrays(blocks).GetString();
+        }
+
+        private BitArray PerformRound(BitArray block, BitArray[] keys, bool isEncrypt)
+        {
             BitArray leftBlock = block.LeftHalf();
             BitArray rightBlock = block.RightHalf();
 
-            for (int j = 0; j < MAX_ROUND; j++)
+            for (int round = 0; round < MAX_ROUND; round++)
             {
-                BitArray functionResult = Function(rightBlock, keyBlocks[j]);
-                BitArray temp = rightBlock;
-                rightBlock = leftBlock.Xor(functionResult);
-                leftBlock = temp;
+                if (isEncrypt)
+                {
+                    BitArray previousRightBlock = rightBlock;
+                    rightBlock = leftBlock.Xor(PerformFunction(rightBlock, keys[round]));
+                    leftBlock = previousRightBlock;
+                }
+                else
+                {
+                    BitArray prevoiusLeftBlock = leftBlock;
+                    leftBlock = rightBlock.Xor(PerformFunction(leftBlock, keys[round]));
+                    rightBlock = prevoiusLeftBlock;
+                }
             }
 
-            block.AssignHalves(rightBlock, leftBlock); // меняем блоки местами в последнем раунде и объеденяем
-            block = _finalPermutator.Permutate(block);
+            block = BitArrayHelper.MergeArrays(leftBlock, rightBlock);
+            return block;
         }
-        #endregion 
 
-        #region Дешифрование алгоритмом DES
-        /// <summary>
-        /// Дешифрует входной текст, зашифрованный с использованием алгоритма DES.
-        /// </summary>
-        /// <param name="input">Шифр текст</param>
-        /// <param name="key">Ключ для дешифрования</param>
-        /// <returns>Исходный текст</returns>
-        public string Decrypt(string input, BitArray key)
+        private BitArray PerformFunction(BitArray block, BitArray key)
         {
-            BitArray[] blocks = PrepareBlocks(input);
-            BitArray[] keyBlocks = GenerateKey(key, false);
+            block = _expansionFunction.Expand(block);
+            block = block.Xor(key);
+            block = _sBoxPermutator.Permutate(block);
+            block = _pBoxPermutator.Permutate(block);
+            return block;
+        }
 
-            for (int i = 0; i < blocks.Length; i++)
+        private BitArray[] GenerateKeys(BitArray key, bool isEncrypt)
+        {
+            BitArray[] keys = new BitArray[MAX_ROUND];
+
+            int startRound = isEncrypt ? 0 : MAX_ROUND - 1;
+            int step = isEncrypt ? 1 : -1;
+
+            BitArray leftKeyBlock = key.LeftHalf();
+            BitArray rightKeyBlock = key.RightHalf();
+
+            for (int round = startRound; isEncrypt ? round < MAX_ROUND : round >= 0; round += step)
             {
-                EncryptBlock(ref blocks[i], keyBlocks);
-            }
-
-            BitArray encryptedBitArray = BitArrayHelper.MergeArrays(blocks);
-            return encryptedBitArray.GetString();
-        }
-
-        // Метод для дешифрования блока текста алгоритмом DES
-        private void DecryptBlock(ref BitArray block, BitArray[] keyBlocks)
-        {
-            block = _finalPermutator.Permutate(block);
-            
-            // Меняем блоки местами в первом раунде для обратной функции сети фейстеля
-            BitArray leftBlock = block.RightHalf();
-            BitArray rightBlock = block.LeftHalf();
-
-            for (int j = MAX_ROUND - 1; j >= 0; j--)
-            {
-                BitArray functionResult = Function(leftBlock, keyBlocks[j]);
-                BitArray temp = leftBlock;
-                leftBlock = rightBlock.Xor(functionResult);
-                rightBlock = temp;
-            }
-
-            block.AssignHalves(leftBlock, rightBlock);
-            block = _initialPermutator.InitialPermutate(block);
-        }
-        #endregion
-
-        private BitArray[] PrepareBlocks(string input)
-        {
-            BitArray inputBitArray = BitArrayHelper.FromString(input);
-            return inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
-        }
-
-        // Выполняет функцию F для преобразования блока данных.
-        // Входные параметры:
-        // - block: блок данных, который подвергается преобразованию.
-        // - key: ключ, используемый для преобразования блока.
-        // Результат работы функции F:
-        // - permutedBlock: преобразованный блок данных после выполнения всех этапов.
-        private BitArray Function(BitArray block, BitArray key)
-        {
-            // Шаг 1: Расширение блока
-            BitArray expandedRightBlock = _expansionFunction.Expand(block);
-
-            // Шаг 2: Применение операции XOR к расширенному блоку и ключу
-            BitArray xoredBlock = expandedRightBlock.Xor(key);
-
-            // Шаг 3: Применение S-боксов для замены значений в блоке
-            BitArray substitutedBlock = _sBoxPermutator.Permutate(xoredBlock);
-
-            // Шаг 4: Перестановка значений в блоке с помощью P-бокса
-            BitArray permutedBlock = _pBoxPermutator.Permutate(substitutedBlock);
-
-            // Возвращаем преобразованный блок данных
-            return permutedBlock;
-        }
-
-        // Метод для генерации ключей для алгоритма DES
-        private BitArray[] GenerateKey(BitArray key, bool isEncryption = true)
-        {
-            key = _keyComperssionPermutator.Permutate(key);
-
-            BitArray[] roundKeys = new BitArray[MAX_ROUND];
-
-            for (int round = GetStartingRound(isEncryption); IsRoundConditionMet(round, isEncryption); round = UpdateRound(round, isEncryption))
-            {
-                BitArray leftKeyHalf = key.LeftHalf();
-                BitArray rightKeyHalf = key.RightHalf();
-
                 int shiftValue = GetShiftValue(round + 1);
 
-                leftKeyHalf = leftKeyHalf.ShiftArrayLeft(shiftValue);
-                rightKeyHalf = rightKeyHalf.ShiftArrayLeft(shiftValue);
+                leftKeyBlock = leftKeyBlock.LeftShift(shiftValue);
+                rightKeyBlock = rightKeyBlock.LeftShift(shiftValue);
 
-                key.AssignHalves(leftKeyHalf, rightKeyHalf);
+                BitArray permutatedKey = BitArrayHelper.MergeArrays(leftKeyBlock, rightKeyBlock);
 
-                roundKeys[round] = _finalKeyCompressionPermutator.Permutate(key);
+                int index = isEncrypt ? round : MAX_ROUND - (round + 1);
+                keys[index] = _finalKeyCompressionPermutator.Permutate(permutatedKey);
             }
 
-            return roundKeys;
-        }
-
-        private int GetStartingRound(bool isEncryption)
-        {
-            // Определяет начальный раунд в зависимости от режима работы (шифрование или расшифрование).
-            // Для шифрования возвращает 0 (первый раунд), для расшифрования возвращает максимальное значение раунда (MAX_ROUND).
-            return isEncryption ? 0 : MAX_ROUND;
-        }
-
-        private bool IsRoundConditionMet(int round, bool isEncryption)
-        {
-            // Проверяет, выполнено ли условие для продолжения цикла генерации ключа.
-            // Для шифрования проверяет, если текущий раунд меньше максимального значения (MAX_ROUND).
-            // Для расшифрования проверяет, если текущий раунд больше или равен 1.
-            return isEncryption ? round < MAX_ROUND - 1 : round >= 0;
-        }
-
-        private int UpdateRound(int round, bool isEncryption)
-        {
-            // Обновляет счетчик раунда для следующей итерации цикла генерации ключа.
-            // Для шифрования увеличивает счетчик раунда на 1, для расшифрования уменьшает счетчик раунда на 1.
-            return isEncryption ? round + 1 : round - 1;
+            return keys;
         }
 
         private int GetShiftValue(int round)

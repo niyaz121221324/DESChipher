@@ -54,7 +54,7 @@ namespace DESChipherConsoleTool
         public static BitMatrix FromBitArray(BitArray bitArray, int rows, int columns)
         {
             if (bitArray.Length != rows * columns)
-                throw new ArgumentException("BitArray length does not match matrix dimensions");
+                throw new ArgumentException("Длинна массива не совпадает с произведением строк и столбцов");
 
             BitMatrix result = new BitMatrix(rows, columns);
 
@@ -78,7 +78,7 @@ namespace DESChipherConsoleTool
         public string GetString()
         {
             if (Columns % 8 != 0)
-                throw new ArgumentException("Columns count must be a multiple of 8.");
+                throw new ArgumentException("Количество колонок должно кратно 8.");
 
             StringBuilder sb = new StringBuilder();
 

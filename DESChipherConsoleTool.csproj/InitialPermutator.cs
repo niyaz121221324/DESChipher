@@ -18,7 +18,7 @@ namespace DESChipherConsoleTool
         public BitArray InitialPermutate(BitArray input)
         {
             if (input.Length != 64)
-                throw new ArgumentException("Unable to perform initial permutation: array dimensions are incorrect.");
+                throw new ArgumentException("Невозможно применить начальную IP перестановку, длинна массива не равно 64.");
 
             bool[] bools = new bool[initialPermutationTable.Length];
 

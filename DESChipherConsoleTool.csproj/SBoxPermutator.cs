@@ -70,7 +70,7 @@ namespace DESChipherConsoleTool
         public BitArray Permutate(BitArray input)
         {
             if (input.Length != 48)
-                throw new ArgumentException("Unable to perform s-box permutation: array dimensions are incorrect.");
+                throw new ArgumentException("Невозможно применить перестановку s-блоками, размер массива не равен 48");
 
             int[][,] boxes =  
             {

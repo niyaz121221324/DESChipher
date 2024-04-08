@@ -95,7 +95,7 @@ namespace DESChipherConsoleTool
                 throw new ArgumentNullException(nameof(bitArray));
 
             if (bitArray.Length % 8 != 0)
-                throw new ArgumentException("BitArray length must be a multiple of 8.");
+                throw new ArgumentException("Длинна строки должна содержать делимое на 8 число бит.");
 
             StringBuilder sb = new StringBuilder(bitArray.Length / 8);
 

@@ -83,7 +83,7 @@ namespace DESChipherConsoleTool
             for (int i = 0; i < bitArrays.Length; i++)
             {
                 int row = bitArrays[i].GetFirstNBits(2).ToInt32(); // полчаем индекс строки в s-блоке
-                int col = bitArrays[i].SubBytes(2).ToInt32(); // получаем индекс столбца в s-блоке
+                int col = bitArrays[i].SubBits(2).ToInt32(); // получаем индекс столбца в s-блоке
                 res[i] = boxes[i][row, col];
             }
 

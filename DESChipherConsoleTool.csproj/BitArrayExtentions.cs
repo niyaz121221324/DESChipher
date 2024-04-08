@@ -420,7 +420,7 @@ namespace DESChipherConsoleTool
         /// <param name="bitArray">Массив бит</param>
         /// <param name="startIndex">Начальный индекс для получения подмассива</param>
         /// <returns>Массив начиная с startIndex и до конца массива</returns>
-        public static BitArray SubBytes(this BitArray bitArray, int startIndex = 0)
+        public static BitArray SubBits(this BitArray bitArray, int startIndex = 0)
         {
             if (startIndex < 0 || startIndex > bitArray.Length)
                 throw new ArgumentException("Начальный индекс должен быть больше 0 и меньше длинны массива");

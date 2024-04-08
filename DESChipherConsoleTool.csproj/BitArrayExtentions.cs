@@ -321,13 +321,11 @@ namespace DESChipherConsoleTool
         /// <returns>Целое число, сформированное битами в bitArray.</returns>
         public static int ToInt32(this BitArray bitArray)
         {
-            int[] array = bitArray.ToIntArray();
-
             int result = 0;
 
             for (int i = 0; i < bitArray.Length; i++)
             {
-                if (array[i] == 1)
+                if (bitArray[i])
                 {
                     result += Convert.ToInt32(Math.Pow(2, i));
                 }
@@ -414,6 +412,27 @@ namespace DESChipherConsoleTool
                 bitArray[bitArray.Length - 1 - i] = bitArray[i];
                 bitArray[i] = temp;
             }
+        }
+
+        /// <summary>
+        /// Метод для получения подмассива бит из имеющегося
+        /// </summary>
+        /// <param name="bitArray">Массив бит</param>
+        /// <param name="startIndex">Начальный индекс для получения подмассива</param>
+        /// <returns>Массив начиная с startIndex и до конца массива</returns>
+        public static BitArray SubBytes(this BitArray bitArray, int startIndex = 0)
+        {
+            if (startIndex < 0 || startIndex > bitArray.Length)
+                throw new ArgumentException("Начальный индекс должен быть больше 0 и меньше длинны массива");
+
+            bool[] output = new bool[bitArray.Length - startIndex];
+
+            for (int i = startIndex; i < output.Length; i++)
+            {
+                output[i] = bitArray[i + startIndex];
+            }
+
+            return new BitArray(output);
         }
     }
 }

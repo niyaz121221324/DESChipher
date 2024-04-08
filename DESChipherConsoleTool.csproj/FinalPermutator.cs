@@ -3,7 +3,7 @@ namespace DESChipherConsoleTool
 {
     class FinalPermutator : IFinalPermutator
     {
-        private readonly int[] FinalPermutationTable = 
+        private readonly int[] finalPermutationTable = 
         {
             39,  7, 47, 15, 55, 23, 63, 31,
             38,  6, 46, 14, 54, 22, 62, 30,
@@ -17,14 +17,18 @@ namespace DESChipherConsoleTool
 
         public BitArray Permutate(BitArray input)
         {
-            bool[] bools = new bool[FinalPermutationTable.Length];
+            if (input.Length != 64)
+                throw new ArgumentException("Размер входного массива должен быть 64 бита.");
 
-            for (int i = 0; i < bools.Length; i++)
+            BitArray output = new BitArray(64);
+
+            for (int i = 0; i < 64; i++)
             {
-                bools[i] = input[FinalPermutationTable[i]];
+                int newIndex = finalPermutationTable[i]; // Индекс для новой позиции бита
+                output[i] = input[newIndex];
             }
 
-            return new BitArray(bools);
+            return output;
         }
     }
 }

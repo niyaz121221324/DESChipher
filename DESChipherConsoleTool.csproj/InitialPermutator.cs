@@ -3,31 +3,32 @@ namespace DESChipherConsoleTool
 {
     public class InitialPermutator : IInitialPermutator
     {
-        private readonly int[] initialPermutationTable = 
+        private readonly int[] initialPermutationTable =
         {
-            57, 49, 41, 33, 25, 17,  9,  1,
-            59, 51, 43, 35, 27, 19, 11,  3,
-            61, 53, 45, 37, 29, 21, 13,  5,
-            63, 55, 47, 39, 31, 23, 15,  7,
-            56, 48, 40, 32, 24, 16,  8,  0,
-            58, 50, 42, 34, 26, 18, 10,  2,
-            60, 52, 44, 36, 28, 20, 12,  4,
-            62, 54, 46, 38, 30, 22, 14,  6
+            58, 50, 42, 34, 26, 18, 10, 2,
+            60, 52, 44, 36, 28, 20, 12, 4,
+            62, 54, 46, 38, 30, 22, 14, 6,
+            64, 56, 48, 40, 32, 24, 16, 8,
+            57, 49, 41, 33, 25, 17, 9, 1,
+            59, 51, 43, 35, 27, 19, 11, 3,
+            61, 53, 45, 37, 29, 21, 13, 5,
+            63, 55, 47, 39, 31, 23, 15, 7
         };
 
         public BitArray InitialPermutate(BitArray input)
         {
             if (input.Length != 64)
-                throw new ArgumentException("Невозможно применить начальную IP перестановку, длинна массива не равно 64.");
+                throw new ArgumentException("Размер входного массива должен быть 64 бита.");
 
-            bool[] bools = new bool[initialPermutationTable.Length];
+            BitArray output = new BitArray(64);
 
-            for (int i = 0; i < input.Length; i++)
+            for (int i = 0; i < 64; i++)
             {
-                bools[i] = input[initialPermutationTable[i]];
+                int newIndex = initialPermutationTable[i] - 1; // Индекс для новой позиции бита
+                output[i] = input[newIndex];
             }
 
-            return new BitArray(bools);
+            return output;
         }
     }
 }

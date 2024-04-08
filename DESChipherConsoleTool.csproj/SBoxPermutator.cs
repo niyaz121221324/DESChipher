@@ -82,38 +82,12 @@ namespace DESChipherConsoleTool
 
             for (int i = 0; i < bitArrays.Length; i++)
             {
-                int row = GetRowIndex(bitArrays[i]);
-                int col = GetColIndex(bitArrays[i]);
+                int row = bitArrays[i].GetFirstNBits(2).ToInt32(); // полчаем индекс строки в s-блоке
+                int col = bitArrays[i].SubBytes(2).ToInt32(); // получаем индекс столбца в s-блоке
                 res[i] = boxes[i][row, col];
             }
 
             return BitArrayHelper.FromIntArray(res);
-        }
-
-        private int GetRowIndex(BitArray bitArray)
-        {
-            bool[] rowBoolArray = new bool[2];
-
-            for (int i = 0; i < 2; i++)
-            {
-                rowBoolArray[i] = bitArray[i];
-            }
-
-            BitArray rowBitArray = new BitArray(rowBoolArray);
-            return rowBitArray.ToInt32();
-        }
-
-        private int GetColIndex(BitArray bitArray)
-        {
-            bool[] colBoolArray = new bool[4];
-
-            for (int i = 2; i < 6; i++) 
-            {
-                colBoolArray[i - 2] = bitArray[i];
-            }
-
-            BitArray colBitArray = new BitArray(colBoolArray);
-            return colBitArray.ToInt32();
         }
     }
 }

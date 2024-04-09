@@ -406,11 +406,12 @@ namespace DESChipherConsoleTool
         /// <param name="bitArray">Екземпляр массива</param>
         public static void Reverse(this BitArray bitArray)
         {
-            for (int i = bitArray.Length - 1; i >= 0; i--)
+            int length = bitArray.Length;
+            for (int i = 0; i < length / 2; i++)
             {
-                var temp = bitArray[i];
-                bitArray[bitArray.Length - 1 - i] = bitArray[i];
-                bitArray[i] = temp;
+                bool temp = bitArray[i];
+                bitArray[i] = bitArray[length - 1 - i];
+                bitArray[length - 1 - i] = temp;
             }
         }
 

@@ -5,29 +5,23 @@ namespace DESChipherConsoleTool
     {
         private const int MAX_ROUND = 16;
 
-        private readonly IInitialPermutator _initialPermutator;
-        private readonly IKeyComperssionPermutator _keyComperssionPermutator;
-        private readonly IFinalKeyCompressionPermutator _finalKeyCompressionPermutator;
-        private readonly ISBoxPermutator _sBoxPermutator;
-        private readonly IExpansionFunction _expansionFunction;
-        private readonly IPFinalPermutator _pBoxPermutator;
-        private readonly IFinalPermutator _finalPermutator;
+        private readonly InitialPermutator _initialPermutator;
+        private readonly KeyCompressionPermutator _keyComperssionPermutator;
+        private readonly FinalKeyCompressionPermutator _finalKeyCompressionPermutator;
+        private readonly SBoxPermutator _sBoxPermutator;
+        private readonly ExpansionFunction _expansionFunction;
+        private readonly PBoxPermutator _pBoxPermutator;
+        private readonly FinalPermutator _finalPermutator;
 
-        public DESSecurityProvider(IInitialPermutator initialPermutatior = null,
-            IFinalKeyCompressionPermutator finalKeyCompressionPermutator = null,
-            IKeyComperssionPermutator keyComperssionPermutator = null, 
-            IExpansionFunction expansionFunction = null,
-            ISBoxPermutator sBoxPermutator = null,
-            IPFinalPermutator pBoxPermutator = null, 
-            IFinalPermutator finalPermutator = null)
+        public DESSecurityProvider()
         {
-            _initialPermutator = initialPermutatior ?? new InitialPermutator();
-            _keyComperssionPermutator = keyComperssionPermutator ?? new KeyCompressionPermutator();
-            _finalKeyCompressionPermutator = finalKeyCompressionPermutator ?? new FinalKeyCompressionPermutator();
-            _expansionFunction = expansionFunction ?? new ExpansionFunction();
-            _sBoxPermutator = sBoxPermutator ?? new SBoxPermutator();
-            _pBoxPermutator = pBoxPermutator ?? new PBoxPermutator();
-            _finalPermutator = finalPermutator ?? new FinalPermutator();
+            _initialPermutator = new InitialPermutator();
+            _keyComperssionPermutator = new KeyCompressionPermutator();
+            _finalKeyCompressionPermutator = new FinalKeyCompressionPermutator();
+            _expansionFunction = new ExpansionFunction();
+            _sBoxPermutator = new SBoxPermutator();
+            _pBoxPermutator = new PBoxPermutator();
+            _finalPermutator = new FinalPermutator();
         }
 
         /// <summary>

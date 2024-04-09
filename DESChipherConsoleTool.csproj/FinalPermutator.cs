@@ -1,7 +1,7 @@
 ﻿
 namespace DESChipherConsoleTool
 {
-    class FinalPermutator : IFinalPermutator
+    class FinalPermutator
     {
         private readonly int[] finalPermutationTable = 
         {
@@ -15,6 +15,11 @@ namespace DESChipherConsoleTool
             32,  0, 40,  8, 48, 16, 56, 24
         };
 
+        /// <summary>
+        /// Метод реализующий конечную перестановку в алгоритме DES
+        /// </summary>
+        /// <param name="input">Массив бит на вход</param>
+        /// <returns>Массив бит после перестановки</returns>vv
         public BitArray Permutate(BitArray input)
         {
             if (input.Length != 64)

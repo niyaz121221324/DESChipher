@@ -1,8 +1,10 @@
 ﻿
-
 namespace DESChipherConsoleTool
-{
-    class PBoxPermutator : IPFinalPermutator
+{ 
+    /// <summary>
+    /// P-Перестановка
+    /// </summary>
+    class PBoxPermutator 
     {
         private readonly int[] PTable = new int[]
         {
@@ -12,6 +14,11 @@ namespace DESChipherConsoleTool
             19, 13, 30, 6, 22, 11, 4, 25
         };
 
+        /// <summary>
+        /// Метод реализующий перестановку P в алгоритме DES 
+        /// </summary>
+        /// <param name="input">битовый массив на вход</param>
+        /// <returns>массив после перестановки</returns>
         public BitArray Permutate(BitArray input)
         {
             bool[] bools = new bool[PTable.Length];

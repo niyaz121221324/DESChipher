@@ -1,7 +1,7 @@
 ﻿
 namespace DESChipherConsoleTool
 {
-    public class InitialPermutator : IInitialPermutator
+    public class InitialPermutator 
     {
         private readonly int[] initialPermutationTable =
         {
@@ -15,6 +15,11 @@ namespace DESChipherConsoleTool
             63, 55, 47, 39, 31, 23, 15, 7
         };
 
+        /// <summary>
+        /// Метод выполняет начальную перестановку в алгоритме DES.
+        /// </summary>
+        /// <param name="input">Входной блок данных для перестановки.</param>
+        /// <returns>Битовый массив, представляющий результат начальной перестановки.</returns>
         public BitArray InitialPermutate(BitArray input)
         {
             if (input.Length != 64)

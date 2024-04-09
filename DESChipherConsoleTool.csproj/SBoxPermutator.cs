@@ -67,6 +67,11 @@ namespace DESChipherConsoleTool
             { 2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11 }
         };
 
+        /// <summary>
+        /// Метод реализующий перестановку s-блоками алгоритма des
+        /// </summary>
+        /// <param name="input">Битовый массив на вход для преоброзования</param>
+        /// <returns>Преобразованный битовый массив</returns>
         public BitArray Permutate(BitArray input)
         {
             if (input.Length != 48)

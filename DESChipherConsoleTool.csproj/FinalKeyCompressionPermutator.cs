@@ -1,7 +1,7 @@
 ﻿
 namespace DESChipherConsoleTool
 {
-    public class FinalKeyCompressionPermutator : IFinalKeyCompressionPermutator
+    public class FinalKeyCompressionPermutator
     {
         private readonly int[] keyPC2Table =
         {
@@ -10,6 +10,11 @@ namespace DESChipherConsoleTool
             51, 45, 33, 48, 44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32
         };
 
+        /// <summary>
+        /// Переставляет биты входного массива с использованием определенного алгоритма сжатия ключа.
+        /// </summary>
+        /// <param name="input">Входной битовый массив для перестановки.</param>
+        /// <returns>Переставленный битовый массив.</returns>
         public BitArray Permutate(BitArray input)
         {
             bool[] bools = new bool[keyPC2Table.Length];

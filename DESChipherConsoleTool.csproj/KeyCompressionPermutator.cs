@@ -1,8 +1,13 @@
 ﻿
 namespace DESChipherConsoleTool
 {
-    public class KeyCompressionPermutator : IKeyComperssionPermutator
+    public class KeyCompressionPermutator
     {
+        /// <summary>
+        /// Производит перестановку битов входного блока данных согласно определенной таблице сжатия ключа.
+        /// </summary>
+        /// <param name="input">Входной блок данных, который нужно переставить.</param>
+        /// <returns>Битовый массив, представляющий результат перестановки.</returns>
         public BitArray Permutate(BitArray input)
         {
             if (input.Length != 64)

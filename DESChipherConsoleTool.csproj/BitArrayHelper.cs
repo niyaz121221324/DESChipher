@@ -96,10 +96,21 @@ namespace DESChipherConsoleTool
 
             for (int i = 0; i < bytes.Length; i++)
             {
+                // Преобразуем текущий байт в массив битов
                 BitArray bitArray = new BitArray(new byte[] { bytes[i] });
-                bools.AddRange(bitArray.ToCorrectBitArray().ToBoolArray());
+
+                // Переворачиваем порядок битов в массиве битов
+                bool[] reversedBits = new bool[bitArray.Length];
+                for (int j = 0; j < bitArray.Length; j++)
+                {
+                    reversedBits[j] = bitArray[bitArray.Length - 1 - j];
+                }
+
+                // Добавляем скорректированные биты в список
+                bools.AddRange(reversedBits);
             }
 
+            // Создаем и возвращаем новый экземпляр BitArray на основе списка битов
             return new BitArray(bools.ToArray());
         }
 

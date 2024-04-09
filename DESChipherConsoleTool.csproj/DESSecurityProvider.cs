@@ -58,9 +58,9 @@ namespace DESChipherConsoleTool
 
             for (int i = 0; i < blocks.Length; i++)
             {
-                blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
-                blocks[i] = PerformRound(blocks[i], keys, false);
                 blocks[i] = _finalPermutator.Permutate(blocks[i]);
+                blocks[i] = PerformRound(blocks[i], keys, false);
+                blocks[i] = _initialPermutator.InitialPermutate(blocks[i]);
             }
 
             return BitArrayHelper.MergeArrays(blocks).GetString();
@@ -118,7 +118,7 @@ namespace DESChipherConsoleTool
                 int shiftValue = GetShiftValue(round + 1);
                 leftKeyBlock = leftKeyBlock.LeftShift(shiftValue);
                 rightKeyBlock = rightKeyBlock.LeftShift(shiftValue);
-
+                
                 tempKey = BitArrayHelper.MergeArrays(leftKeyBlock, rightKeyBlock);
                 keys[isEncrypt ? round : MAX_ROUND - (round + 1)] = _finalKeyCompressionPermutator.Permutate(tempKey);
             }

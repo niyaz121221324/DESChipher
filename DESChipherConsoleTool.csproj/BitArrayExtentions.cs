@@ -230,8 +230,19 @@ namespace DESChipherConsoleTool
         /// <returns>Новый объект BitArray с исправленным порядком элементов.</returns>
         public static BitArray ToCorrectBitArray(this BitArray bitArray)
         {
-            bool[] boolArray = bitArray.ToBoolArray();
-            return new BitArray(boolArray.Reverse().ToArray());
+            int length = bitArray.Length;
+            bool[] boolArray = new bool[length];
+
+            // Скопируйте биты из исходного BitArray в логический массив.
+            bitArray.CopyTo(boolArray, 0);
+
+            // Поменяйте местами биты внутри каждого байта
+            for (int i = 0; i < length / 8; i++)
+            {
+                Array.Reverse(boolArray, i * 8, 8);
+            }
+
+            return new BitArray(boolArray);
         }
 
         /// <summary>
@@ -423,12 +434,13 @@ namespace DESChipherConsoleTool
         /// <returns>Массив начиная с startIndex и до конца массива</returns>
         public static BitArray SubBits(this BitArray bitArray, int startIndex = 0)
         {
-            if (startIndex < 0 || startIndex > bitArray.Length)
-                throw new ArgumentException("Начальный индекс должен быть больше 0 и меньше длинны массива");
+            if (startIndex < 0 || startIndex >= bitArray.Length)
+                throw new ArgumentException("Начальный индекс должен быть больше или равен 0 и меньше длины массива");
 
-            bool[] output = new bool[bitArray.Length - startIndex];
+            int subLength = bitArray.Length - startIndex;
+            bool[] output = new bool[subLength];
 
-            for (int i = startIndex; i < output.Length; i++)
+            for (int i = 0; i < subLength; i++)
             {
                 output[i] = bitArray[i + startIndex];
             }

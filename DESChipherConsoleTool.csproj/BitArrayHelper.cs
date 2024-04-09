@@ -4,41 +4,26 @@ namespace DESChipherConsoleTool
     public static class BitArrayHelper
     {
         /// <summary>
-        /// Преобразует массив байтов в массив битов, корректируя порядок битов в каждом байте так, чтобы они были представлены в правильном порядке.
-        /// </summary>
-        /// <param name="bytes">Массив байтов для преобразования в массив битов.</param>
-        /// <returns>Массив битов, представляющий переданные байты с корректным порядком битов.</returns>
-        public static BitArray ConvertCorrectByteToBitArray(byte[] bytes)
-        {
-            List<bool> bools = new List<bool>();
-
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                BitArray bitArray = new BitArray(new byte[] { bytes[i] });
-                bools.AddRange(bitArray.ToCorrectBitArray().ToBoolArray());
-            }
-
-            return new BitArray(bools.ToArray());
-        }
-
-        /// <summary>
         /// Объединяет несколько битовых массивов в один.
         /// </summary>
         /// <param name="array">Массивы битов, которые необходимо объединить.</param>
         /// <returns>Результат объединения всех переданных массивов.</returns>
         public static BitArray MergeArrays(params BitArray[] bitArrays)
         {
-            List<bool> bools = new List<bool>();
+            int totalLength = bitArrays.Sum(array => array.Length);
 
+            BitArray mergedArray = new BitArray(totalLength);
+
+            int currentIndex = 0;
             foreach (var bitArray in bitArrays)
             {
                 for (int i = 0; i < bitArray.Length; i++)
                 {
-                    bools.Add(bitArray[i]);
+                    mergedArray[currentIndex++] = bitArray[i];
                 }
             }
 
-            return new BitArray(bools.ToArray());
+            return mergedArray;
         }
 
         /// <summary>
@@ -101,6 +86,24 @@ namespace DESChipherConsoleTool
         }
 
         /// <summary>
+        /// Преобразует массив байтов в массив битов, корректируя порядок битов в каждом байте так, чтобы они были представлены в правильном порядке.
+        /// </summary>
+        /// <param name="bytes">Массив байтов для преобразования в массив битов.</param>
+        /// <returns>Массив битов, представляющий переданные байты с корректным порядком битов.</returns>
+        public static BitArray ConvertCorrectByteToBitArray(byte[] bytes)
+        {
+            List<bool> bools = new List<bool>();
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                BitArray bitArray = new BitArray(new byte[] { bytes[i] });
+                bools.AddRange(bitArray.ToCorrectBitArray().ToBoolArray());
+            }
+
+            return new BitArray(bools.ToArray());
+        }
+
+        /// <summary>
         /// Генерирует массив бит из массива чисел
         /// </summary>
         /// <param name="inputArray">массив чисел на вход</param>
@@ -118,21 +121,24 @@ namespace DESChipherConsoleTool
         }
 
         /// <summary>
-        /// Метод который возвращает 4 бита из числа 
+        /// Преобразует целое число в его двоичное представление из 4 битов.
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
+        /// <param name="input">Целое число для преобразования.</param>
+        /// <returns>Массив из 4 булевых значений, представляющих двоичное представление числа.</returns>
         public static bool[] ConvertToBinary(int input)
         {
+            // Представление числа в двоичном формате
             string binaryString = Convert.ToString(input, 2);
             bool[] boolArray = new bool[4];
 
+            // Проход по строке двоичного представления числа и преобразование каждого символа в булево значение
             for (int i = 0; i < binaryString.Length; i++)
             {
                 char bitChar = binaryString[i];
                 boolArray[i] = bitChar == '1';
             }
-            
+
+            // Если длина двоичной строки меньше 4 бит, то заполняем ее слева нулями
             if (binaryString.Length < 4)
             {
                 int value = binaryString.Length - 4;

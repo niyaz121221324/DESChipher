@@ -1,7 +1,7 @@
 ﻿
 namespace DESChipherConsoleTool
 {
-    class SBoxPermutator : ISBoxPermutator
+    class SBoxPermutator 
     {
         private readonly int[,] SBox1 = new int[,] 
         {

@@ -112,15 +112,15 @@ namespace DESChipherConsoleTool
 
             for (int round = startRound; isEncrypt ? round < MAX_ROUND : round >= 0; round += step)
             {
-                int shiftValue = GetShiftValue(round + 1);
+                BitArray tempKey = BitArrayHelper.MergeArrays(leftKeyBlock, rightKeyBlock);
+                keys[isEncrypt ? round : MAX_ROUND - (round + 1)] = _keyComperssionPermutator.Permutate(tempKey);
 
+                int shiftValue = GetShiftValue(round + 1);
                 leftKeyBlock = leftKeyBlock.LeftShift(shiftValue);
                 rightKeyBlock = rightKeyBlock.LeftShift(shiftValue);
 
-                BitArray permutatedKey = BitArrayHelper.MergeArrays(leftKeyBlock, rightKeyBlock);
-
-                int index = isEncrypt ? round : MAX_ROUND - (round + 1);
-                keys[index] = _finalKeyCompressionPermutator.Permutate(permutatedKey);
+                tempKey = BitArrayHelper.MergeArrays(leftKeyBlock, rightKeyBlock);
+                keys[isEncrypt ? round : MAX_ROUND - (round + 1)] = _finalKeyCompressionPermutator.Permutate(tempKey);
             }
 
             return keys;

@@ -17,14 +17,14 @@ namespace DESChipherConsoleTool
         /// <returns>Переставленный битовый массив.</returns>
         public BitArray Permutate(BitArray input)
         {
-            bool[] bools = new bool[keyPC2Table.Length];
+            BitArray output = new BitArray(keyPC2Table.Length);
 
-            for (int i = 0; i < bools.Length; i++)
+            for (int i = 0; i < output.Length; i++)
             {
-                bools[i] = input[keyPC2Table[i] - 1];
+                output[i] = input[keyPC2Table[i] - 1];
             }
 
-            return new BitArray(bools);
+            return output;
         }
     }
 }

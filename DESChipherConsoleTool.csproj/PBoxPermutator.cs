@@ -6,7 +6,7 @@ namespace DESChipherConsoleTool
     /// </summary>
     class PBoxPermutator 
     {
-        private readonly int[] PTable = new int[]
+        private readonly int[] PTable = 
         {
             16, 7, 20, 21, 29, 12, 28, 17,
             1, 15, 23, 26, 5, 18, 31, 10,
@@ -21,14 +21,14 @@ namespace DESChipherConsoleTool
         /// <returns>массив после перестановки</returns>
         public BitArray Permutate(BitArray input)
         {
-            bool[] bools = new bool[PTable.Length];
+            BitArray output = new BitArray(PTable.Length);
 
-            for (int i = 0; i < bools.Length; i++)
+            for (int i = 0; i < output.Length; i++)
             {
-                bools[i] = input[PTable[i] - 1];
+                output[i] = input[PTable[i] - 1];
             }
 
-            return new BitArray(bools);
+            return output;
         }
     }
 }

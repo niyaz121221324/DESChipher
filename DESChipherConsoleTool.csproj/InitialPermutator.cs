@@ -25,9 +25,9 @@ namespace DESChipherConsoleTool
             if (input.Length != 64)
                 throw new ArgumentException("Размер входного массива должен быть 64 бита.");
 
-            BitArray output = new BitArray(64);
+            BitArray output = new BitArray(initialPermutationTable.Length);
 
-            for (int i = 0; i < 64; i++)
+            for (int i = 0; i < output.Length; i++)
             {
                 int newIndex = initialPermutationTable[i] - 1; // Индекс для новой позиции бита
                 output[i] = input[newIndex];

@@ -22,14 +22,14 @@ namespace DESChipherConsoleTool
         /// <returns>Расширенный массив, полученная в результате применения функции расширения.</returns>
         public BitArray Expand(BitArray input)
         {
-            bool[] bools = new bool[expansionTable.Length];
+            BitArray output = new BitArray(expansionTable.Length);
 
-            for (int i = 0; i < expansionTable.Length; i++)
+            for (int i = 0; i < output.Length; i++)
             {
-                bools[i] = input[expansionTable[i] - 1];
+                output[i] = input[expansionTable[i] - 1];
             }
 
-            return new BitArray(bools);
+            return output;
         }
     }
 }

@@ -4,7 +4,7 @@ namespace DESChipherConsoleTool
     public class KeyCompressionPermutator
     {
         // Определите таблицу сжатия, указав, какие биты следует сохранить, а какие пропустить.
-        int[] compressionTable =
+        private readonly int[] compressionTable =
         {
             1, 2, 3, 4, 5, 6, 7,
             9, 10, 11, 12, 13, 14, 15,

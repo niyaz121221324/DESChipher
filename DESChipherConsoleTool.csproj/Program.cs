@@ -4,10 +4,10 @@ class Program
     static void Main()
     {
         Console.Write("Введите текст для шифрования : ");
-        string input = Console.ReadLine();
+        string? input = Console.ReadLine();
 
         Console.WriteLine("Входная строка в битовом представлении : ");
-        PrintBitArrayInfo(input);
+        PrintBitArrayInfo(input ?? string.Empty);
 
         BitMatrix[] blocks = BitMatrix.GetBlocksFromString(input);
 

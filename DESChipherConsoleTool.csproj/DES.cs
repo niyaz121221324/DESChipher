@@ -17,7 +17,7 @@ namespace DESChipherConsoleTool
             byte[] keyBytes = Encoding.ASCII.GetBytes(key);
             BitArray keyBits = new BitArray(keyBytes);
 
-            KeyGenerator keyGenerator = new KeyGenerator();
+            KeysGenerator keyGenerator = new KeysGenerator();
             subkeys = keyGenerator.GenerateKeys(keyBits, subkeys);
         }
 

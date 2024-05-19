@@ -1,7 +1,7 @@
 ﻿
 namespace DESChipherConsoleTool
 {
-    class KeyGenerator
+    class KeysGenerator
     {
         // Таблица для изначального сжатия ключа
         private static readonly int[] PC1 = {

@@ -24,26 +24,6 @@ namespace DESChipherConsoleTool
         }
 
         /// <summary>
-        /// Возвращает массив матриц из строки для алгоритма DES
-        /// </summary>
-        /// <param name="input">Входная строка</param>
-        /// <returns>Массив битовых матриц</returns>
-        public static BitMatrix[] GetBlocksFromString(string input)
-        {
-            BitArray inputBitArray = BitArrayHelper.FromString(input);
-            BitArray[] blocks = inputBitArray.SplitArrayIntoEqualParts(64).ToArray();
-
-            BitMatrix[] bitMatrices = new BitMatrix[blocks.Length];
-
-            for (int i = 0; i < bitMatrices.Length; i++)
-            {
-                bitMatrices[i] = FromBitArray(blocks[i], 8, 8);
-            }
-
-            return bitMatrices;
-        }
-
-        /// <summary>
         /// Преобразует массив битов в матрицу битов.
         /// </summary>
         /// <param name="bitArray">Массив битов для преобразования.</param>
@@ -70,33 +50,16 @@ namespace DESChipherConsoleTool
             return result;
         }
 
-        /// <summary>
-        /// Преобразует бинарную матрицу в строковое представление.
-        /// </summary>
-        /// <returns>Строка, сформированная из текущей матрицы.</returns>
-        /// <exception cref="ArgumentException">Вызывается, когда количество столбцов не кратно 8.</exception>
-        public string GetString()
+        public void Print()
         {
-            if (Columns % 8 != 0)
-                throw new ArgumentException("Количество колонок должно кратно 8.");
-
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < Rows; i++)
+            for (int row = 0;  row < Rows; row++)
             {
-                int symbolValue = 0;
-
-                for (int j = 0; j < Columns; j++)
+                for(int col = 0; col < Columns; col++)
                 {
-                    symbolValue <<= 1;
-                    if (matrix[i, j])
-                        symbolValue |= 1;
+                    Console.Write(matrix[row, col] ? "1 " : "0 ");
                 }
-
-                sb.Append((char)symbolValue);
+                Console.WriteLine();
             }
-
-            return sb.ToString();
         }
     }
 }

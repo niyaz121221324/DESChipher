@@ -3,16 +3,22 @@ public class Program
 {
     public static void Main()
     {
-        DES des = new DES();
-        string key = "0123456789ABCDEF";
+        while (true)
+        {
+            Console.Write("Input key values : ");
+            string key = Console.ReadLine() ?? string.Empty;
+            DES des = new DES(key);
 
-        string text = Console.ReadLine() ?? string.Empty;
+            Console.Write("Input text to encrypt : ");
+            string text = Console.ReadLine() ?? string.Empty;
 
-        Console.WriteLine();
-        string encryptText = des.Encrypt(text, key);
-        Console.WriteLine($"Encrypted text is {encryptText}");
+            Console.WriteLine();
+            string encryptText = des.Encrypt(text, key);
+            Console.WriteLine($"Encrypted text is {encryptText}");
 
-        string decryptText = des.Decrypt(encryptText, key);
-        Console.WriteLine($"Decrypted text is {decryptText}");
+            string decryptText = des.Decrypt(encryptText, key);
+            Console.WriteLine($"Decrypted text is {decryptText}");
+            Console.WriteLine();
+        }
     }
 }

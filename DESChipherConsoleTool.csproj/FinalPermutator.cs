@@ -3,7 +3,8 @@ namespace DESChipherConsoleTool
 {
     public static class FinalPermutator
     {
-        private static readonly int[] FP = {
+        private static readonly int[] FP = 
+        {
             40, 8, 48, 16, 56, 24, 64, 32,
             39, 7, 47, 15, 55, 23, 63, 31,
             38, 6, 46, 14, 54, 22, 62, 30,

@@ -3,7 +3,8 @@ namespace DESChipherConsoleTool
 {
     public static class ExpantionFunction
     {
-        private static readonly int[] E = {
+        private static readonly int[] E = 
+        {
             32, 1, 2, 3, 4, 5,
             4, 5, 6, 7, 8, 9,
             8, 9, 10, 11, 12, 13,

@@ -74,7 +74,8 @@ namespace DESChipherConsoleTool
             BitArray ciphertextBits = new BitArray(paddedLength * 8);
             for (int i = 0; i < paddedLength; i += 8)
             {
-                BitArray block = new BitArray(new byte[] {
+                BitArray block = new BitArray(new byte[] 
+                {
                     paddedBytes[i],
                     paddedBytes[i + 1],
                     paddedBytes[i + 2],
@@ -134,7 +135,8 @@ namespace DESChipherConsoleTool
             BitArray plaintextBits = new BitArray(length * 8);
             for (int i = 0; i < length; i += 8)
             {
-                BitArray block = new BitArray(new byte[] {
+                BitArray block = new BitArray(new byte[] 
+                {
                     ciphertextBytes[i],
                     ciphertextBytes[i + 1],
                     ciphertextBytes[i + 2],

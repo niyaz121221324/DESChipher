@@ -3,7 +3,8 @@ namespace DESChipherConsoleTool
 {
     public static class PBoxPermutator
     {
-        private static readonly int[] P = {
+        private static readonly int[] P = 
+        {
             16, 7, 20, 21,
             29, 12, 28, 17,
             1, 15, 23, 26,

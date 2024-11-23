@@ -19,6 +19,7 @@ public class Program
             string decryptText = des.Decrypt(encryptText, key);
             Console.WriteLine($"Decrypted text is {decryptText}");
             Console.WriteLine();
+            Console.WriteLine();
         }
     }
 }

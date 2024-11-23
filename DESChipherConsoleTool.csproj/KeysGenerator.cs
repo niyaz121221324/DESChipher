@@ -4,7 +4,8 @@ namespace DESChipherConsoleTool
     class KeysGenerator
     {
         // Таблица для изначального сжатия ключа
-        private static readonly int[] PC1 = {
+        private static readonly int[] PC1 = 
+        {
             57, 49, 41, 33, 25, 17, 9,
             1, 58, 50, 42, 34, 26, 18,
             10, 2, 59, 51, 43, 35, 27,
@@ -16,7 +17,8 @@ namespace DESChipherConsoleTool
         };
 
         // Таблица для перестановки PC2
-        private static readonly int[] PC2 = {
+        private static readonly int[] PC2 = 
+        {
             14, 17, 11, 24, 1, 5, 3, 28,
             15, 6, 21, 10, 23, 19, 12, 4,
             26, 8, 16, 7, 27, 20, 13, 2,
@@ -26,7 +28,8 @@ namespace DESChipherConsoleTool
         };
 
         // Таблица для определения значения сдвига влево для каждого раунда
-        private static readonly int[] Shifts = {
+        private static readonly int[] Shifts = 
+        {
             1, 1, 2, 2, 2, 2, 2, 2,
             1, 2, 2, 2, 2, 2, 2, 1
         };

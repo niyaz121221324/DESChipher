@@ -17,5 +17,5 @@
 
 1. Склонируйте репозиторий:
    ```bash
-   git clone https://github.com/niyaz121221324/DESChipher/new/master
+   git clone https://github.com/niyaz121221324/DESChipher
    cd <папка-с-репозиторием>
